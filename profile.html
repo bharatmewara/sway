@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SWAY - Private Verified Connections</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+
+  <main class="main">
+
+ <div class="topbar">
+      <div class="row g-3 align-items-center">
+        <div class="col-lg-auto col-12">
+          <aside class="sidebar">
+            <div class="sidebar-top me-md-5">
+              <div class="logo"><img src="img/logo-black.png" alt="logo"></div>
+            
+              <button class="menu-toggle" type="button" data-bs-toggle="collapse" title="toggler" data-bs-target="#multiCollapseExample2" aria-expanded="false" aria-controls="multiCollapseExample2">
+                <span class="icon-bar"><i class="bi bi-list"></i></span>
+              </button>
+            </div>
+
+            <nav class="menu collapse navbar-collapse" id="multiCollapseExample2">
+              <a href="home.html" ><i class="bi bi-house"></i> Home</a>
+              <a href="profile.html" class="active"><i class="bi bi-person-circle"></i> My Profile</a>
+              <a href="private-chats.html"><i class="bi bi-chat-square"></i> Private Chats <span class="badge-dot">1</span></a>
+              <a href="requests.html"><i class="bi bi-person"></i> Requests <span class="badge-dot">3</span></a>
+              <a href="visitors.html"><i class="bi bi-eye"></i> Visitors</a>
+              <a href="search.html"><i class="bi bi-search"></i> Search</a>
+ <a href="crush.html" ><img src="img/rose.svg" class="rose"> Crush</a>
+
+            </nav>
+
+            <hr>
+
+
+
+          </aside>
+        </div>
+
+        <div class="col-auto d-flex justify-content-xl-end align-items-center gap-3 ms-auto">
+         <a href="purchse-connect.html" class="connect_card py-2 px-2">Connect <b class="ms-2">14</b></a>
+          <div class="icon-btn"><i class="bi bi-bell"></i><span class="notify">3</span></div>
+          <div class="icon-btn"><i class="bi bi-chat"></i><span class="notify">1</span></div>
+          <div class="d-flex align-items-center gap-2 dropdown-toggle" data-bs-toggle="dropdown">
+            <div class="avatar"></div>
+            <div><b>Michael Brown</b><br><small>Premium Member</small></div>
+          </div>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> Settings</a></li>
+            <li> <a class="dropdown-item" href="login.html" class="text-danger text-decoration-none fw-bold">
+                <i class="bi bi-box-arrow-left me-2"></i> Logout
+              </a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <section class="content">
+      <div class="row g-3">
+
+        <div class="col-12 col-lg-9">
+          <div class="row g-3">
+
+           
+
+            <div class="col-lg-3">
+              <div class="action-card h-100"> 
+                <div class="action-item ">
+                  <div class="profile_div"><img src="img/profile.jpg" class="profile_img"><i class="bi bi-camera"></i></div>
+                  <div class="pt-3"><b>Upload Profile Photos</b> </div>
+                </div>               
+              </div>
+              </div> 
+            <div class="col-lg-9">
+              <div class="action-card h-100">
+                <div class="row">
+                <div class="col-md-4">
+                <div class="action-item">
+                  <div class="action-icon"><i class="bi bi-camera"></i></div>
+                  <div class="pt-3"><b>Upload Private Photos</b><br><small>This picture will be encrypted for your security.</small></div>
+                </div>
+
+              </div>
+               <div class="col-md-8"> 
+                  <div class="upload_photos"> 
+                    <img src="img/private_photo.jpg" class="">
+                    <img src="img/private_photo.jpg" class="">
+                    <img src="img/private_photo.jpg" class="">
+                    <img src="img/private_photo.jpg" class="">
+                    <img src="img/private_photo.jpg" class="">
+                    <img src="img/private_photo.jpg" class="">
+                 </div>
+              </div>
+              </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card-box">
+                <h5 class="fw-bold mb-4">
+                  <i class="bi bi-person text-danger me-2"></i> Personal Information
+                </h5>
+
+                <div class="row g-3">
+                  <div class="col-4">
+                    <label class="form-label small">Day</label>
+                    <select class="form-select">
+                      <option>01</option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label small">Month</label>
+                    <select class="form-select">
+                      <option>07</option>
+                    </select>
+                  </div>
+                  <div class="col-4">
+                    <label class="form-label small">Year</label>
+                    <select class="form-select">
+                      <option>1991</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small">Gender</label>
+                    <select class="form-select">
+                      <option>Straight</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small">Marital Status</label>
+                    <select class="form-select">
+                      <option>Married</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small">Children</label>
+                    <select class="form-select">
+                      <option>No</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label small">Occupation</label>
+                    <select class="form-select">
+                      <option>Consultant</option>
+                    </select>
+                  </div>
+
+                  
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="card-box">
+                <h5 class="fw-bold mb-4">
+                  <i class="bi bi-heart text-danger me-2"></i> Type of Relationship Sought
+                </h5>
+
+                <div class="row g-3">
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box active">
+                      <i class="bi bi-heart fs-3"></i>
+                      <b>Anything Exciting</b>
+                      <i class="bi bi-check-circle-fill check"></i>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box">
+                      <i class="bi bi-stopwatch fs-3"></i>
+                      <b>Long Term</b>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box active">
+                      <i class="bi bi-people fs-3"></i>
+                      <b>Open to Anything</b>
+                      <i class="bi bi-check-circle-fill check"></i>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box">
+                      <i class="bi bi-clock fs-3"></i>
+                      <b>Short Term</b>
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box">
+                      <i class="bi bi-question-circle fs-3"></i>
+                      <b> Undecided </b>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-sm-6">
+                    <div class="relation-box">
+                      <i class="bi bi-badge-vr fs-3"></i>
+                      <b>Virtual</b>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card-box">
+                <h5 class="fw-bold mb-4">
+                  <i class="bi bi-person-fill me-2"></i> PHYSICAL INFORMATION
+                </h5>
+
+                <div class="row g-4">
+                  <div class="col-md-3">
+                    <label>Height :</label>
+                    <input class="form-control mt-2" value="177 cm">
+                  </div>
+
+                  <div class="col-md-3">
+                    <label>Figure :</label>
+                    <select class="form-select mt-2">
+                      <option></option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label>Ethnicity :</label>
+                    <select class="form-select mt-2">
+                      <option></option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label>Smoker :</label>
+                    <select class="form-select mt-2">
+                      <option>No</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="card-box">
+                <h5 class="fw-bold mb-4">
+                  <i class="bi bi-person-fill me-2"></i> MY PERSONAL INFORMATION
+                </h5>
+                <div class="preference-group mb-4">
+                  <h5 class="mb-3">My personality</h5>
+
+                  <div class="row">
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Active / Lively</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Cheerful</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Honest / Frank</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Modest</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Relaxed / Casual</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Shy</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Ambitious</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Cultivated</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Imaginative</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Moody</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Reliable</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Sociable</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Calm</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Fun</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Independent</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Open-minded</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Self-confident
+                      </div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Sophisticated</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Chatty</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Generous</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Mature</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Outgoing</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Sensitive</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Spiritual</div>
+                    </div>
+
+                  </div>
+                </div>
+                <hr />
+                <!-- Sexual Practices -->
+                <div class="preference-group mb-4">
+                  <h5 class="mb-3">Sexual practices</h5>
+
+                  <div class="row">
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Anything goes
+                      </div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Conventional sex only
+                      </div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Reading erotic literature
+                      </div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Threesome</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Blind folded
+                      </div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Costumes</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Role playing
+                      </div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Using toys</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Dominated</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Dominating</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Romantic sex
+                      </div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Watching erotic
+                        movies</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Being watched</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Private</div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Unusual places
+                      </div>
+                      <div class="form-check"><input checked class="form-check-input" type="checkbox"> Willing to
+                        experiment</div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <hr />
+                <!-- Hobbies -->
+                <div class="preference-group mb-4">
+                  <h5 class="mb-3">My hobbies</h5>
+
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Arts and crafts</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Cooking</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Hiking</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Book clubs</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Dining out</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Movies</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Charity</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Fishing</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Museums</div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Coffee</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Gardening</div>
+                      <div class="form-check"><input class="form-check-input" type="checkbox"> Music</div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <hr />
+                <div class="preference-group mb-4">
+                  <h5 class="mb-3">I am looking for</h5>
+
+                  <div class="row g-3">
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look1">
+        <label class="form-check-label" for="look1">Being listened to</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look2">
+        <label class="form-check-label" for="look2">Discretion / Secrecy</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look3">
+        <label class="form-check-label" for="look3">Just a flirt</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look4">
+        <label class="form-check-label" for="look4">No particular expectations</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look5">
+        <label class="form-check-label" for="look5">Platonic</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look6">
+        <label class="form-check-label" for="look6">Short-term</label>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look7">
+        <label class="form-check-label" for="look7">Chatting</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look8">
+        <label class="form-check-label" for="look8">Experience sharing</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look9">
+        <label class="form-check-label" for="look9">Learning / Exchanging</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look10">
+        <label class="form-check-label" for="look10">No strings attached</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look11">
+        <label class="form-check-label" for="look11">Playful</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look12">
+        <label class="form-check-label" for="look12">Something serious</label>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look13">
+        <label class="form-check-label" for="look13">Companionship</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look14">
+        <label class="form-check-label" for="look14">Friendship</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look15">
+        <label class="form-check-label" for="look15">Long</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look16">
+        <label class="form-check-label" for="look16">One-night-stand</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look17">
+        <label class="form-check-label" for="look17">Purely sexual</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look18">
+        <label class="form-check-label" for="look18">Soulmate</label>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look19">
+        <label class="form-check-label" for="look19">Complicity</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look20">
+        <label class="form-check-label" for="look20">Homosexual / Bisexual</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look21">
+        <label class="form-check-label" for="look21">Loving</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look22">
+        <label class="form-check-label" for="look22">Passion</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look23">
+        <label class="form-check-label" for="look23">Romantic</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="look24">
+        <label class="form-check-label" for="look24">Taking things slow</label>
+      </div>
+    </div>
+
+  </div>
+
+                </div>
+
+                <hr />
+
+                <div class="sticky-save">
+                  <button class="btn-red">Save</button>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+          <div class="col-12 col-lg-3">
+          <div class="rightbar mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <h6 class="fw-bold">Active Conversations</h6> 
+            </div>
+
+            <div class="scrool_right">
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Sophia Miller</b><br><small><span class="small-dot"></span> Online</small></div>
+              <span class="badge-dot">2</span>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Emma Wilson</b><br><small class="text-danger">Typing...</small></div>
+              <span class="badge-dot">1</span>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Olivia Harper</b><br><small>2 min ago</small></div>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Mia Anderson</b><br><small><span class="small-dot"></span> Online</small></div>
+            </div>
+            </div>
+          </div>
+   <div class="rightbar mb-4">
+            <div class="d-flex justify-content-between mb-2">
+              <h6 class="fw-bold">Chat Requests Conversations</h6>
+              
+            </div>
+ <div class="scrool_right">
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Sophia Miller</b><br><small><span class="small-dot"></span> Online</small></div>
+              <span class="badge-dot">2</span>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Emma Wilson</b><br><small class="text-danger">Typing...</small></div>
+              <span class="badge-dot">1</span>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Olivia Harper</b><br><small>2 min ago</small></div>
+            </div>
+
+            <div class="user-row">
+              <div class="avatar"></div>
+              <div><b>Mia Anderson</b><br><small><span class="small-dot"></span> Online</small></div>
+            </div>
+          </div>
+          </div>
+       
+
+          <div class="rightbar">
+            <div class="d-flex justify-content-between mb-3">
+              <h6 class="fw-bold">Who Viewed You</h6>
+              <a href="#" class="text-danger small">See All</a>
+            </div>
+
+            <div>
+              <span class="profile-img"></span>
+              <span class="profile-img"></span>
+              <span class="profile-img"></span>
+              <span class="profile-img"></span>
+              <span class="profile-img bg-light text-dark text-center pt-2">+23</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+ 
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
