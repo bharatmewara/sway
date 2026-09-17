@@ -1,0 +1,37 @@
+@import './variables.css';
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--cream);
+  color: var(--text);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--wine); text-decoration: none; }
+a:hover { color: var(--wine-light); }
+
+img { max-width: 100%; display: block; }
+
+.spinner-overlay {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.7);
+  z-index: 9999;
+}
+
+.btn-wine {
+  background: var(--wine);
+  color: #fff;
+  border: 1px solid var(--wine);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-wine:hover { background: var(--wine-dark); color: #fff; }
+
+.spinner-border-wine { color: var(--wine); }

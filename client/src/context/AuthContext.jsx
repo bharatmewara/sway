@@ -1,32 +1,30 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import axios from '../api/axios'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { authService } from '../services/auth.service'
+import { userService } from '../services/user.service'
+import { storage } from '../utils/storage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null)
-  const [token, setToken] = useState(localStorage.getItem('sway_token'))
+  const [user,    setUser]    = useState(null)
+  const [token,   setToken]   = useState(storage.getToken)
   const [loading, setLoading] = useState(true)
+  const [counts,  setCounts]  = useState({ messages: 0, requests: 0, notifications: 0 })
+  const [activeChatUserId, setActiveChatUserId] = useState(null)
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('sway_token')
-    if (storedToken) {
-      verifyToken(storedToken)
-    } else {
-      setLoading(false)
-    }
+    const t = storage.getToken()
+    if (t) verifyToken(t)
+    else   setLoading(false)
   }, [])
 
-  const verifyToken = async (tkn) => {
+  const verifyToken = async (t) => {
     try {
-      const res = await axios.get('/auth/me', {
-        headers: { Authorization: `Bearer ${tkn}` }
-      })
+      const res = await authService.me()
       setUser(res.data.user || res.data)
-      setToken(tkn)
+      setToken(t)
     } catch {
-      localStorage.removeItem('sway_token')
-      localStorage.removeItem('sway_user')
+      storage.clear()
       setUser(null)
       setToken(null)
     } finally {
@@ -34,16 +32,15 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const login = (userData, tkn) => {
-    localStorage.setItem('sway_token', tkn)
-    localStorage.setItem('sway_user', JSON.stringify(userData))
-    setToken(tkn)
+  const login = (userData, t) => {
+    storage.setToken(t)
+    storage.setUser(userData)
+    setToken(t)
     setUser(userData)
   }
 
   const logout = () => {
-    localStorage.removeItem('sway_token')
-    localStorage.removeItem('sway_user')
+    storage.clear()
     setToken(null)
     setUser(null)
   }
@@ -51,40 +48,30 @@ export function AuthProvider({ children }) {
   const updateUser = (data) => {
     const updated = { ...user, ...data }
     setUser(updated)
-    localStorage.setItem('sway_user', JSON.stringify(updated))
+    storage.setUser(updated)
   }
 
-  const [counts, setCounts] = useState({ messages: 0, requests: 0, notifications: 0 });
-  const [activeChatUserId, setActiveChatUserId] = useState(null);
-
-  const fetchCounts = async () => {
-    if (!token) return;
+  const fetchCounts = useCallback(async () => {
+    if (!token) return
     try {
-      const res = await axios.get('/users/counts', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.data && res.data.success) {
-        setCounts(res.data.counts);
-      }
-    } catch (err) {
-      console.error('Failed to fetch counts', err);
-    }
-  };
+      const res = await userService.getCounts()
+      if (res.data?.success) setCounts(res.data.counts)
+    } catch {}
+  }, [token])
 
   useEffect(() => {
-    let interval;
-    if (user && token) {
-      fetchCounts();
-      interval = setInterval(fetchCounts, 10000);
-    }
-    
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [user, token]);
+    if (!user || !token) return
+    fetchCounts()
+    const interval = setInterval(fetchCounts, 30000)
+    return () => clearInterval(interval)
+  }, [user, token, fetchCounts])
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, updateUser, loading, counts, fetchCounts, activeChatUserId, setActiveChatUserId }}>
+    <AuthContext.Provider value={{
+      user, token, loading, counts,
+      login, logout, updateUser, fetchCounts,
+      activeChatUserId, setActiveChatUserId,
+    }}>
       {children}
     </AuthContext.Provider>
   )

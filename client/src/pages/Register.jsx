@@ -32,8 +32,7 @@ export default function Register() {
       const res = await api.post('/auth/register', formData);
       localStorage.setItem('sway_token', res.data.token);
       localStorage.setItem('sway_user', JSON.stringify(res.data.user));
-      toast.success('Registration successful!');
-      window.location.href = '/verify';
+      window.location.href = '/home';
     } catch (err) {
       if (err.response?.data?.errors) {
         toast.error(err.response.data.errors[0].msg);

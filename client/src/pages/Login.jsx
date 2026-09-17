@@ -16,11 +16,7 @@ export default function Login() {
       const res = await api.post('/auth/login', { identifier: username, password });
       login(res.data.user, res.data.token);
       toast.success('Welcome back!');
-      if (res.data.user.verification_status === 'verified') {
-        navigate('/home');
-      } else {
-        navigate('/verify');
-      }
+      navigate('/home');
     } catch (err) {
       if (err.response?.data?.errors) {
         toast.error(err.response.data.errors[0].msg);

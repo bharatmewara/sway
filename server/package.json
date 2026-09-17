@@ -1,11 +1,13 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "sway-server",
+  "version": "2.0.0",
+  "description": "SWAY Dating App - Backend API",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js"
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node ../database/migrate.js",
+    "test": "jest --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +19,6 @@
     "bcryptjs": "^3.0.3",
     "canvas": "^3.2.3",
     "cors": "^2.8.6",
-    "crypto": "^1.0.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
@@ -27,8 +28,6 @@
     "morgan": "^1.11.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.1",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
     "pg": "^8.22.0",
     "qrcode": "^1.5.4",
     "razorpay": "^2.9.6",
@@ -37,5 +36,8 @@
     "speakeasy": "^2.0.0",
     "twilio": "^6.0.2",
     "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
   }
 }

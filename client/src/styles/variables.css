@@ -1,0 +1,23 @@
+:root {
+  --wine:   #76000b;
+  --wine-dark: #580007;
+  --wine-light: #bc212f;
+  --dark:   #050505;
+  --gold:   #d8a83f;
+  --cream:  #fff8ef;
+  --text:   #2b1111;
+  --border: #e5e7eb;
+  --bg:     #f7f5f8;
+  --white:  #ffffff;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.08);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.12);
+
+  --font: 'Poppins', sans-serif;
+}

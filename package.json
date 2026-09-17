@@ -4,6 +4,7 @@
   "description": "SWAY Dating App Workspace",
   "scripts": {
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "db:migrate": "npm run migrate --prefix server",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "start": "concurrently \"npm start --prefix server\" \"npm run preview --prefix client\""
   },

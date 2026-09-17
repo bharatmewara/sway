@@ -1,28 +1,38 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { io } from 'socket.io-client'
 
-export default function useSocket() {
-  const [connected, setConnected] = useState(false)
-  const socketRef = useRef(null)
+let globalSocket = null
+
+export const useSocket = () => {
+  const [socket, setSocket] = useState(globalSocket)
+  const [connected, setConnected] = useState(globalSocket?.connected || false)
 
   useEffect(() => {
     const token = localStorage.getItem('sway_token')
     if (!token) return
 
-    const socket = io('/', {
-      auth: { token },
-      transports: ['websocket'],
-    })
+    if (!globalSocket) {
+      globalSocket = io('/', { auth: { token }, transports: ['websocket'] })
+    }
 
-    socketRef.current = socket
+    const s = globalSocket
 
-    socket.on('connect', () => setConnected(true))
-    socket.on('disconnect', () => setConnected(false))
+    const handleConnect = () => setConnected(true)
+    const handleDisconnect = () => setConnected(false)
+
+    s.on('connect', handleConnect)
+    s.on('disconnect', handleDisconnect)
+
+    setSocket(s)
+    setConnected(s.connected)
 
     return () => {
-      socket.disconnect()
+      s.off('connect', handleConnect)
+      s.off('disconnect', handleDisconnect)
     }
   }, [])
 
-  return { socket: socketRef.current, connected }
+  return { socket, connected }
 }
+
+export default useSocket

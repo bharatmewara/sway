@@ -1,87 +1,102 @@
-# SWAY Dating App - Full Stack Setup Guide
+# SWAY Dating App - Production Architecture
 
-## Quick Start
+SWAY is a modern, privacy-first verified dating application built on a decoupled architecture with a React frontend and Node.js/Express multi-tier backend.
 
-### 1. Configure Database
-Edit `server/.env` and set your PostgreSQL password:
+---
+
+## 📁 Repository Structure
+
+```text
+sway/
+├── client/                     # React frontend (Vite)
+│   ├── public/                 # Static assets & model weights
+│   └── src/
+│       ├── assets/             # Images, fonts, and icons
+│       ├── components/         # Reusable UI component library
+│       │   ├── common/         # Button, Input, Modal, Loader, Avatar
+│       │   ├── auth/           # LoginForm, RegisterForm, OTPVerification
+│       │   ├── profile/        # ProfileCard, Header, Photos, Preferences
+│       │   ├── discovery/      # DiscoverCard, SwipeCard, FilterPanel, Actions
+│       │   ├── matches/        # MatchCard, MatchList, MatchProfile
+│       │   └── chat/           # ChatList, ChatWindow, Message, Input, Typing
+│       ├── pages/              # Flow-based page views
+│       │   ├── auth/           # Login, Register, ForgotPassword, VerifyOTP
+│       │   ├── onboarding/     # Welcome, BasicInfo, Preferences, ProfileSetup
+│       │   ├── app/            # Dashboard, Discover, Matches, Messages, Notifications, Profile
+│       │   └── settings/       # AccountSettings, PrivacySettings, NotificationSettings, Subscription
+│       ├── layouts/            # AuthLayout, MainLayout, ChatLayout
+│       ├── hooks/              # useAuth, useSocket, useDebounce, useInfiniteScroll
+│       ├── services/           # Axios HTTP API services
+│       ├── store/              # Reactive slice state management
+│       ├── routes/             # AppRoutes configuration
+│       ├── utils/              # Constants, validators, formatters, storage
+│       ├── styles/             # Global CSS and design tokens
+│       ├── App.jsx             # Root application component
+│       └── main.jsx            # Entry point
+│
+├── server/                     # Node.js backend
+│   └── src/
+│       ├── config/             # database, env, cloudinary, socket
+│       ├── controllers/        # HTTP presentation controllers
+│       ├── services/           # Core domain business logic
+│       ├── repositories/       # Data Access Objects (SQL queries)
+│       ├── routes/             # Express route declarations
+│       ├── middleware/         # Auth, error, rateLimit, upload, validation
+│       ├── validators/         # Request schemas and sanitizers
+│       ├── models/             # Centralized schema models
+│       ├── sockets/            # Real-time WebSocket handlers
+│       ├── utils/              # JWT, password, logger, response helpers
+│       ├── jobs/               # Background tasks and workers
+│       ├── app.js              # Express app setup
+│       └── server.js           # HTTP server and socket startup
+│
+├── database/                   # Migrations, seeds, and SQL schema
+│   ├── migrations/
+│   ├── seeds/
+│   └── schema.sql
+│
+├── uploads/                    # User media uploads
+├── docs/                       # Architecture, API, and DB documentation
+│   ├── API.md
+│   ├── DATABASE.md
+│   └── ARCHITECTURE.md
+│
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── README.md
+└── package.json
 ```
-DB_PASSWORD=your_postgres_password
-```
 
-### 2. Set up Database
+---
+
+## 🚀 Getting Started
+
+### 1. Installation
+Install all dependencies across root, server, and client:
 ```bash
-cd server
-node setup-db.js
+npm run install:all
 ```
 
-### 3. Configure Razorpay
-In `server/.env`, add your Razorpay test keys:
-```
-RAZORPAY_KEY_ID=rzp_test_YOUR_KEY
-RAZORPAY_KEY_SECRET=YOUR_SECRET
-```
-Get keys from: https://dashboard.razorpay.com/app/keys
-
-### 4. Copy Images to Client
+### 2. Environment Setup
+Copy `.env.example` to `server/.env` and update your PostgreSQL credentials:
 ```bash
-# Copy the img folder to client/public
-xcopy /E /I "d:\Dating\img" "d:\Dating\client\public\img"
+cp .env.example server/.env
 ```
 
-### 5. Start All Servers
-
-**Terminal 1 - Backend:**
+### 3. Database Initialization
+Import the schema into your PostgreSQL database:
 ```bash
-cd d:\Dating\server
+psql -U postgres -d sway -f database/schema.sql
+psql -U postgres -d sway -f database/seeds/001_demo_seed.sql
+```
+
+### 4. Running Development Servers
+Start both backend and frontend concurrently:
+```bash
 npm run dev
 ```
 
-**Terminal 2 - Frontend:**
-```bash
-cd d:\Dating\client
-npm run dev
-```
-
-**Terminal 3 - Admin Panel:**
-```bash
-cd d:\Dating\admin
-npm run dev
-```
-
-## Access URLs
-- **Frontend**: http://localhost:5173
-- **Admin Panel**: http://localhost:5174/admin/login
-- **Backend API**: http://localhost:5000/api
-
-## Admin Credentials
-- Email: `admin@sway.com`
-- Password: `Admin@123`
-
-## Features
-- ✅ Full user registration with gender selection
-- ✅ AI-simulated facial verification (women: selfie only)
-- ✅ Document verification (men: selfie + govt ID)
-- ✅ Admin verification review queue
-- ✅ Credits system (1 credit/message for males, free for females)
-- ✅ Real-time chat via Socket.io
-- ✅ Nearby members with radius filter
-- ✅ Razorpay credit purchase (Pack 25/100/400)
-- ✅ Admin panel with city analytics, user management, revenue charts
-- ✅ Connection requests, crushes, visitors
-- ✅ Private photos with access control
-
-## Credit System
-| Action | Credits |
-|--------|---------|
-| Send message (males) | 1 |
-| Send crush | 5 |
-| Send connection request | 5 |
-| View private photos | 10 |
-| Females | FREE (all actions) |
-
-## Credit Packs
-| Pack | Credits | Price |
-|------|---------|-------|
-| Pack 25 | 25 | ₹1,500 |
-| Pack 100 | 100 | ₹4,200 |
-| Pack 400 | 400 | ₹9,600 |
+- **Frontend Client**: `http://localhost:5173`
+- **Backend API**: `http://localhost:5000/api`
+- **Health Check**: `http://localhost:5000/health`

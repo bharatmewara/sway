@@ -10,10 +10,6 @@ export default function RightBar() {
   const [loading, setLoading] = useState(true)
   const { socket } = useSocket()
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
   const fetchData = async () => {
     try {
       const [convRes, reqRes, visRes] = await Promise.all([
@@ -31,6 +27,10 @@ export default function RightBar() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const getAvatar = (photo) =>
     photo ? `http://localhost:5000${photo}` : null
@@ -72,7 +72,7 @@ export default function RightBar() {
       {/* Active Conversations */}
       <div className="rightbar mb-4">
         <div className="d-flex justify-content-between mb-2">
-          <h6 className="fw-bold">Active Conversations</h6>
+          <h6 className="fw-bold mb-0">Active Conversations</h6>
           <Link to="/chats" className="text-danger small text-decoration-none">See All</Link>
         </div>
         <div className="scrool_right">
@@ -81,28 +81,37 @@ export default function RightBar() {
               <div className="spinner-border spinner-border-sm text-danger" />
             </div>
           ) : conversations.length === 0 ? (
-            <p className="text-muted small text-center py-3">No conversations yet</p>
+            <div className="text-center py-4 text-muted small">
+              <i className="bi bi-chat-dots fs-3 d-block mb-1 opacity-50"></i>
+              No active chats yet.
+              <br />
+              <Link to="/members" className="text-danger text-decoration-none fw-semibold">Start chatting</Link>
+            </div>
           ) : (
             conversations.map((conv) => (
               <Link
-                key={conv.conversation_id}
+                key={conv.conversation_id || conv.id}
                 to={`/chats/${conv.other_user_id}`}
                 className="user-row text-decoration-none"
                 style={{ color: 'inherit' }}
               >
                 <div className="avatar">
-                  {getAvatar(conv.other_photo) ? (
-                    <img src={getAvatar(conv.other_photo)} alt={conv.other_username} />
-                  ) : <div className="placeholder-avatar"></div>}
+                  <img
+                    src={conv.other_photo?.startsWith('http') || conv.other_photo?.startsWith('/') ? conv.other_photo : (getAvatar(conv.other_photo) || '/img/profile-man.png')}
+                    alt={conv.other_username || conv.username}
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="flex-grow-1">
-                  <b>{conv.other_username || 'Unknown'}</b>
+                  <b>{conv.other_username || conv.username || 'Member'}</b>
                   <br />
                   <small>
-                    {conv.other_is_online ? (
-                      <><span className="small-dot bg-success"></span> Online</>
+                    {conv.is_typing ? (
+                      <span className="text-danger">Typing...</span>
+                    ) : conv.other_is_online || conv.is_online ? (
+                      <><span className="small-dot"></span> Online</>
                     ) : (
-                      timeAgo(conv.other_last_seen || conv.last_message_at || conv.conversation_created_at)
+                      timeAgo(conv.other_last_seen || conv.last_seen || conv.last_message_at) || 'Active'
                     )}
                   </small>
                 </div>
@@ -118,7 +127,7 @@ export default function RightBar() {
       {/* Chat Requests */}
       <div className="rightbar mb-4">
         <div className="d-flex justify-content-between mb-2">
-          <h6 className="fw-bold">Chat Requests</h6>
+          <h6 className="fw-bold mb-0">Chat Requests Conversations</h6>
           <Link to="/requests" className="text-danger small text-decoration-none">See All</Link>
         </div>
         <div className="scrool_right">
@@ -127,7 +136,10 @@ export default function RightBar() {
               <div className="spinner-border spinner-border-sm text-danger" />
             </div>
           ) : requests.length === 0 ? (
-            <p className="text-muted small text-center py-3">No requests</p>
+            <div className="text-center py-4 text-muted small">
+              <i className="bi bi-person-heart fs-3 d-block mb-1 opacity-50"></i>
+              No pending chat requests.
+            </div>
           ) : (
             requests.map((req) => (
               <Link
@@ -137,14 +149,22 @@ export default function RightBar() {
                 style={{ color: 'inherit' }}
               >
                 <div className="avatar">
-                  {getAvatar(req.profile_photo) ? (
-                    <img src={getAvatar(req.profile_photo)} alt={req.username} />
-                  ) : <div className="placeholder-avatar"></div>}
+                  <img
+                    src={req.profile_photo?.startsWith('http') || req.profile_photo?.startsWith('/') ? req.profile_photo : (getAvatar(req.profile_photo) || '/img/girl.png')}
+                    alt={req.username}
+                    style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="flex-grow-1">
-                  <b>{req.username || 'Unknown'}</b>
+                  <b>{req.username || 'Member'}</b>
                   <br />
-                  <small>{timeAgo(req.created_at)}</small>
+                  <small>
+                    {req.is_online ? (
+                      <><span className="small-dot"></span> Online</>
+                    ) : (
+                      timeAgo(req.created_at) || 'Recent'
+                    )}
+                  </small>
                 </div>
                 <span className="badge-dot">!</span>
               </Link>
@@ -156,38 +176,44 @@ export default function RightBar() {
       {/* Who Viewed You */}
       <div className="rightbar">
         <div className="d-flex justify-content-between mb-3">
-          <h6 className="fw-bold">Who Viewed You</h6>
+          <h6 className="fw-bold mb-0">Who Viewed You</h6>
           <Link to="/visitors" className="text-danger small text-decoration-none">See All</Link>
         </div>
         <div>
           {loading ? (
-             <div className="text-center py-3">
-                <div className="spinner-border spinner-border-sm text-danger" />
-             </div>
+            <div className="text-center py-3">
+              <div className="spinner-border spinner-border-sm text-danger" />
+            </div>
           ) : visitors.length === 0 ? (
-             <p className="text-muted small text-center py-3">No visitors yet</p>
+            <div className="text-center py-3 text-muted small">
+              No recent visitors.
+            </div>
           ) : (
-            visitors.slice(0, 4).map((v, i) => (
-              <Link
-                key={v.visitor_id || i}
-                to={`/view-profile/${v.visitor_id}`}
-                className="profile-img"
-                style={{ textDecoration: 'none', display: 'inline-block', marginRight: '5px' }}
-              >
-                {getAvatar(v.profile_photo) ? (
+            <>
+              {visitors.slice(0, 4).map((v, i) => (
+                <Link
+                  key={v.id || v.visitor_id || i}
+                  to={`/view-profile/${v.visitor_id}`}
+                  className="profile-img"
+                  style={{ textDecoration: 'none', display: 'inline-block', overflow: 'hidden' }}
+                >
                   <img
-                    src={getAvatar(v.profile_photo)}
+                    src={v.profile_photo?.startsWith('http') || v.profile_photo?.startsWith('/') ? v.profile_photo : (getAvatar(v.profile_photo) || '/img/girl.png')}
                     alt={v.username}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                   />
-                ) : <div className="placeholder-avatar" style={{width: '100%', height: '100%', borderRadius: '50%', backgroundColor: '#eee'}}></div>}
-              </Link>
-            ))
-          )}
-          {visitors.length > 4 && (
-            <span className="profile-img bg-light text-dark text-center" style={{ lineHeight: '46px', fontSize: 12 }}>
-              +{visitors.length - 4}
-            </span>
+                </Link>
+              ))}
+              {visitors.length > 4 && (
+                <Link
+                  to="/visitors"
+                  className="profile-img bg-light text-dark text-center text-decoration-none fw-semibold"
+                  style={{ lineHeight: '40px', fontSize: 13 }}
+                >
+                  +{visitors.length - 4}
+                </Link>
+              )}
+            </>
           )}
         </div>
       </div>
