@@ -1,0 +1,109 @@
+/* Search.css - Member search page */
+
+.search-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eef0f3;
+}
+
+.search-card h5 {
+  color: #1a1a1a;
+  font-size: 17px;
+}
+
+.search-card .form-select,
+.search-card .form-control {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #dce2e8;
+  font-size: 13.5px;
+  background-color: #f8fafc;
+}
+
+.search-card .form-select:focus,
+.search-card .form-control:focus {
+  background-color: #ffffff;
+  border-color: #76000b;
+  box-shadow: 0 0 0 0.2rem rgba(118, 0, 11, 0.1);
+}
+
+.search-card label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.search-results-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: #f1f5f9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: block;
+  text-decoration: none;
+}
+
+.search-results-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.search-results-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  display: block;
+}
+
+.search-results-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 14px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.88) 70%);
+  color: #ffffff;
+}
+
+.btn-search-exec {
+  background: linear-gradient(135deg, #c80000, #76000b);
+  color: #ffffff;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 11px 18px;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+.btn-search-exec:hover {
+  opacity: 0.92;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .search-card {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .search-results-card img {
+    height: 185px;
+  }
+
+  .search-results-overlay {
+    padding: 10px;
+  }
+
+  .search-results-overlay h5 {
+    font-size: 13.5px !important;
+  }
+
+  .search-results-overlay small {
+    font-size: 11px !important;
+  }
+}

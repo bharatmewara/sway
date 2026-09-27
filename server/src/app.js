@@ -23,6 +23,8 @@ const subscriptionRoutes = require('./routes/subscription.routes');
 const requestRoutes      = require('./routes/request.routes');
 const visitorRoutes      = require('./routes/visitor.routes');
 const crushRoutes        = require('./routes/crush.routes');
+const verificationRoutes = require('./routes/verification.routes');
+const adminRoutes        = require('./routes/admin.routes');
 
 const app = express();
 
@@ -46,34 +48,47 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(rateLimits.general);
 
 // ── Static Files ──────────────────────────────────────────────────────────────
-app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
+const uploadsDir = path.join(__dirname, '../../uploads');
+app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(path.join(uploadsDir, 'profiles')));
+app.use('/uploads', express.static(path.join(uploadsDir, 'private')));
+app.use('/uploads', express.static(path.join(uploadsDir, 'verification')));
+app.use('/uploads', express.static(path.join(uploadsDir, 'stories')));
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 const pool = require('./config/database');
-app.get('/health', async (req, res) => {
+const healthHandler = async (req, res) => {
   try {
     await pool.query('SELECT 1');
     res.json({ success: true, status: 'healthy', timestamp: new Date().toISOString(), env: env.NODE_ENV });
   } catch (err) {
     res.status(503).json({ success: false, status: 'unhealthy', error: err.message });
   }
-});
+};
+app.get('/health', healthHandler);
+app.get('/api/health', healthHandler);
 
 // ── API Routes (Standard Multi-Tier Architecture) ─────────────────────────────
+app.use('/api/admin',         adminRoutes);
 app.use('/api/auth',          rateLimits.auth, authRoutes);
 app.use('/api/users',         userRoutes);
-app.use('/api/profile',       profileRoutes);
-app.use('/api/discovery',     discoveryRoutes);
+app.use('/api/profile',        profileRoutes);
+app.use('/api/private-photos', profileRoutes);
+app.use('/api/discovery',      discoveryRoutes);
 app.use('/api/matches',       matchRoutes);
-app.use('/api/messages',      chatRoutes);
-app.use('/api/chat',          chatRoutes);
+app.use('/api/messages',         chatRoutes);
+app.use('/api/private-messages', chatRoutes);
+app.use('/api/chat',             chatRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/reports',       reportRoutes);
 app.use('/api/subscription',  subscriptionRoutes);
 app.use('/api/payments',      subscriptionRoutes);
-app.use('/api/requests',      requestRoutes);
-app.use('/api/visitors',      visitorRoutes);
+app.use('/api/requests',               requestRoutes);
+app.use('/api/private-photo-requests', requestRoutes);
+app.use('/api/visitors',               visitorRoutes);
 app.use('/api/crushes',       crushRoutes);
+app.use('/api/verification',  verificationRoutes);
+
 
 // ── 404 Handler ───────────────────────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ success: false, message: `Route ${req.method} ${req.originalUrl} not found.` }));

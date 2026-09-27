@@ -1,9 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../../api/axios';
-
 import { io } from 'socket.io-client';
 
 const AdminAuthContext = createContext(null);
+
+export const ADMIN_ROLES = [
+  'super_admin',
+  'superadmin',
+  'admin',
+  'moderator',
+  'finance_admin',
+  'support_admin',
+  'analyst',
+];
 
 export function AdminAuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
@@ -32,9 +41,10 @@ export function AdminAuthProvider({ children }) {
 
   const verifyToken = async () => {
     try {
-      const res = await api.get('/auth/me');
+      const res = await api.get('/admin/me');
       const user = res.data.user || res.data;
-      if (user.role === 'admin' || user.role === 'superadmin') {
+      const role = String(user?.role || '').toLowerCase();
+      if (user && ADMIN_ROLES.includes(role)) {
         setAdmin(user);
       } else {
         localStorage.removeItem('admin_token');
@@ -49,10 +59,11 @@ export function AdminAuthProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { identifier: email, password });
+    const res = await api.post('/admin/login', { identifier: email, password });
     const { token, user } = res.data;
+    const role = String(user?.role || '').toLowerCase();
 
-    if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+    if (!user || !ADMIN_ROLES.includes(role)) {
       throw new Error('Access denied. Admin privileges required.');
     }
 
@@ -69,7 +80,7 @@ export function AdminAuthProvider({ children }) {
   };
 
   return (
-    <AdminAuthContext.Provider value={{ admin, login, logout, loading, socket }}>
+    <AdminAuthContext.Provider value={{ admin, login, logout, loading, socket, refreshAdmin: verifyToken }}>
       {children}
     </AdminAuthContext.Provider>
   );

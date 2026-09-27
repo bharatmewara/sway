@@ -1,0 +1,87 @@
+/* Visitors.css - Visitors page & profile cards */
+
+.conversation-card {
+  border-radius: 16px;
+  background: #ffffff;
+  transition: all 0.25s ease;
+  overflow: hidden;
+  border: 1px solid #eef0f3 !important;
+}
+
+.conversation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+  border-color: #fca5a5 !important;
+}
+
+.profile-img-private-chat {
+  width: 105px;
+  height: 105px;
+  object-fit: cover;
+  border: 2px solid #76000b;
+  border-radius: 16px;
+  margin: 0 auto;
+  display: block;
+  background: #f1f5f9;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  background: #12b76a;
+  border-radius: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.trash-btn {
+  background: rgba(193, 44, 44, 0.1);
+  border: none;
+  color: #c12c2c;
+  font-size: 14px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.trash-btn:hover {
+  background: #c12c2c;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .conversation-card .card-body {
+    padding: 14px 10px !important;
+  }
+
+  .profile-img-private-chat {
+    width: 72px;
+    height: 72px;
+    border-radius: 12px;
+  }
+
+  .conversation-card h5 {
+    font-size: 13.5px !important;
+  }
+
+  .conversation-card small {
+    font-size: 11px !important;
+  }
+
+  .trash-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    right: 6px;
+    top: 6px;
+  }
+}

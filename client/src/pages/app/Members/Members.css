@@ -1,0 +1,72 @@
+/* Members.css - Members listing page */
+
+.member-card-box {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.member-card-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+}
+
+.member-avatar-box {
+  width: 110px;
+  height: 110px;
+  border-radius: 16px;
+  border: 2px solid #76000b;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #f1f5f9;
+}
+
+.member-avatar-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.member-action-btn {
+  background: #fce8e8;
+  color: #76000b;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.member-action-btn:hover {
+  background: #76000b;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .member-card-box .card-body {
+    padding: 14px 10px !important;
+  }
+
+  .member-avatar-box {
+    width: 76px;
+    height: 76px;
+    border-radius: 12px;
+  }
+
+  .member-card-box h5 {
+    font-size: 14px !important;
+  }
+
+  .member-action-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+}

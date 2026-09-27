@@ -8,8 +8,12 @@ import Dashboard from './admin/pages/Dashboard';
 import Users from './admin/pages/Users';
 import UserDetail from './admin/pages/UserDetail';
 import Verifications from './admin/pages/Verifications';
+import MessagesAdmin from './admin/pages/MessagesAdmin';
+import ConnectsAdmin from './admin/pages/ConnectsAdmin';
 import Transactions from './admin/pages/Transactions';
 import Reports from './admin/pages/Reports';
+import NotificationsAdmin from './admin/pages/NotificationsAdmin';
+import AuditLogsAdmin from './admin/pages/AuditLogsAdmin';
 import CityAnalytics from './admin/pages/CityAnalytics';
 import Settings from './admin/pages/Settings';
 import Analytics from './admin/pages/Analytics';
@@ -34,7 +38,7 @@ function ProtectedAdminRoute({ children }) {
             className="spinner-border"
             style={{ color: '#e53935', width: 48, height: 48, borderWidth: 4 }}
           />
-          <p style={{ color: '#888', marginTop: 16, fontWeight: 500 }}>Loading...</p>
+          <p style={{ color: '#888', marginTop: 16, fontWeight: 500 }}>Loading Admin Console...</p>
         </div>
       </div>
     );
@@ -52,7 +56,7 @@ export default function AdminApp() {
     <AdminAuthProvider>
       <Routes>
         <Route path="login" element={<Login />} />
-        
+
         <Route
           path="*"
           element={
@@ -64,9 +68,13 @@ export default function AdminApp() {
                   <Route path="users" element={<Users />} />
                   <Route path="users/:id" element={<UserDetail />} />
                   <Route path="verifications" element={<Verifications />} />
+                  <Route path="messages" element={<MessagesAdmin />} />
+                  <Route path="connects" element={<ConnectsAdmin />} />
                   <Route path="subscriptions" element={<Subscriptions />} />
                   <Route path="transactions" element={<Transactions />} />
                   <Route path="reports" element={<Reports />} />
+                  <Route path="notifications" element={<NotificationsAdmin />} />
+                  <Route path="audit-logs" element={<AuditLogsAdmin />} />
                   <Route path="city-analytics" element={<CityAnalytics />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="*" element={<Navigate to="dashboard" replace />} />

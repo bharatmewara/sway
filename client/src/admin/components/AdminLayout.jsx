@@ -1,32 +1,56 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
 
-const navItems = [
-  { path: '/admin/dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
-  { path: '/admin/users', label: 'Users', icon: 'bi-people' },
-  { path: '/admin/verifications', label: 'Verifications', icon: 'bi-shield-check' },
-  { path: '/admin/messages', label: 'Messages', icon: 'bi-chat-dots' },
-  { path: '/admin/transactions', label: 'Transactions', icon: 'bi-currency-rupee' },
-  { path: '/admin/reports', label: 'Reports', icon: 'bi-flag' },
-  { path: '/admin/city-analytics', label: 'City Analytics', icon: 'bi-map' },
-  { path: '/admin/settings', label: 'Settings', icon: 'bi-gear' },
+const navGroups = [
+  {
+    section: 'Core Management',
+    items: [
+      { path: '/admin/dashboard', label: 'Dashboard', icon: 'bi-grid-1x2' },
+      { path: '/admin/users', label: 'Users', icon: 'bi-people' },
+      { path: '/admin/verifications', label: 'Verifications', icon: 'bi-shield-check' },
+      { path: '/admin/messages', label: 'Chats & Messages', icon: 'bi-chat-dots' },
+    ],
+  },
+  {
+    section: 'Economy & Moderation',
+    items: [
+      { path: '/admin/connects', label: 'Connects & Packs', icon: 'bi-coin' },
+      { path: '/admin/transactions', label: 'Transactions', icon: 'bi-currency-rupee' },
+      { path: '/admin/reports', label: 'Reports & Blocks', icon: 'bi-flag' },
+      { path: '/admin/notifications', label: 'Notifications', icon: 'bi-megaphone' },
+    ],
+  },
+  {
+    section: 'Insights & System',
+    items: [
+      { path: '/admin/analytics', label: 'Engagement Analytics', icon: 'bi-bar-chart-line' },
+      { path: '/admin/city-analytics', label: 'City Analytics', icon: 'bi-geo-alt' },
+      { path: '/admin/audit-logs', label: 'Admins & Audit Logs', icon: 'bi-journal-check' },
+      { path: '/admin/settings', label: 'Platform Settings', icon: 'bi-sliders' },
+    ],
+  },
 ];
 
 const pageTitles = {
-  '/admin/dashboard': 'Dashboard',
+  '/admin/dashboard': 'Executive Dashboard',
   '/admin/users': 'User Management',
-  '/admin/verifications': 'Verifications',
-  '/admin/messages': 'Messages',
-  '/admin/transactions': 'Transactions',
-  '/admin/reports': 'Reports',
-  '/admin/city-analytics': 'City Analytics',
-  '/admin/settings': 'Settings',
+  '/admin/verifications': 'Live Selfie & Gender Verification',
+  '/admin/messages': 'Chats & Private Messages Control',
+  '/admin/connects': 'Connect Economy & Packages',
+  '/admin/transactions': 'Payments, Transactions & Refunds',
+  '/admin/reports': 'Reports & Blocks Moderation',
+  '/admin/notifications': 'Broadcast & Targeted Notifications',
+  '/admin/analytics': 'Engagement & Funnel Analytics',
+  '/admin/city-analytics': 'City & Regional Analytics',
+  '/admin/audit-logs': 'Admin Roles & Security Audit Logs',
+  '/admin/settings': 'Central Platform & Communication Settings',
 };
 
 export default function AdminLayout({ children }) {
   const { admin, logout } = useAdminAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const currentTitle = Object.entries(pageTitles).find(([key]) =>
     location.pathname.startsWith(key)
@@ -42,11 +66,17 @@ export default function AdminLayout({ children }) {
       .slice(0, 2);
   };
 
+  const formatRole = (role) => {
+    if (!role) return 'Admin';
+    return String(role)
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   return (
-    <div style={{ display: 'flex' }}>
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
       {/* ===== SIDEBAR ===== */}
       <aside className="sidebar-admin">
-        {/* Logo */}
         <div className="logo">
           <h4>
             <span>S</span>WAY
@@ -54,63 +84,31 @@ export default function AdminLayout({ children }) {
           <small>Admin Console</small>
         </div>
 
-        {/* Navigation */}
-        <nav>
-          <div className="nav-section-label">Main Menu</div>
-          <ul className="list-unstyled mb-0">
-            {navItems.slice(0, 4).map((item) => (
-              <li key={item.path} className="nav-item">
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                >
-                  <i className={`bi ${item.icon}`} />
-                  <span>{item.label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          <div className="nav-section-label" style={{ marginTop: 8 }}>
-            Analytics
-          </div>
-          <ul className="list-unstyled mb-0">
-            {navItems.slice(4, 7).map((item) => (
-              <li key={item.path} className="nav-item">
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                >
-                  <i className={`bi ${item.icon}`} />
-                  <span>{item.label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          <div className="nav-section-label" style={{ marginTop: 8 }}>
-            System
-          </div>
-          <ul className="list-unstyled mb-0">
-            {navItems.slice(7).map((item) => (
-              <li key={item.path} className="nav-item">
-                <NavLink
-                  to={item.path}
-                  className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                >
-                  <i className={`bi ${item.icon}`} />
-                  <span>{item.label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
+        <nav style={{ overflowY: 'auto' }}>
+          {navGroups.map((group, idx) => (
+            <div key={group.section} style={{ marginTop: idx > 0 ? 10 : 0 }}>
+              <div className="nav-section-label">{group.section}</div>
+              <ul className="list-unstyled mb-0">
+                {group.items.map((item) => (
+                  <li key={item.path} className="nav-item">
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    >
+                      <i className={`bi ${item.icon}`} />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
-        {/* Sidebar Footer - Admin Info */}
         <div className="sidebar-footer">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div className="avatar-sm" style={{ fontSize: 13 }}>
-              {getInitials(admin?.name || admin?.username)}
+              {getInitials(admin?.nickname || admin?.username)}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div
@@ -123,10 +121,10 @@ export default function AdminLayout({ children }) {
                   whiteSpace: 'nowrap',
                 }}
               >
-                {admin?.name || admin?.username || 'Admin'}
+                {admin?.nickname || admin?.username || 'Admin'}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
-                {admin?.role === 'superadmin' ? 'Super Admin' : 'Admin'}
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11 }}>
+                {formatRole(admin?.role)}
               </div>
             </div>
           </div>
@@ -134,8 +132,7 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* ===== MAIN CONTENT ===== */}
-      <main className="main-admin" style={{ flex: 1 }}>
-        {/* Topbar */}
+      <main className="main-admin" style={{ flex: 1, minWidth: 0 }}>
         <div className="admin-topbar">
           <div>
             <h5 className="topbar-title">{currentTitle}</h5>
@@ -149,8 +146,8 @@ export default function AdminLayout({ children }) {
             </div>
           </div>
           <div className="topbar-right">
-            {/* Notification Bell */}
             <button
+              onClick={() => navigate('/admin/notifications')}
               style={{
                 background: '#f5f6fa',
                 border: 'none',
@@ -163,7 +160,7 @@ export default function AdminLayout({ children }) {
                 cursor: 'pointer',
                 position: 'relative',
               }}
-              title="Notifications"
+              title="Broadcast Notifications"
             >
               <i className="bi bi-bell" style={{ fontSize: 18, color: '#555' }} />
               <span
@@ -180,22 +177,20 @@ export default function AdminLayout({ children }) {
               />
             </button>
 
-            {/* Admin Avatar + Name */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div className="avatar-sm" style={{ fontSize: 13 }}>
-                {getInitials(admin?.name || admin?.username)}
+                {getInitials(admin?.nickname || admin?.username)}
               </div>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#1a1a2e', lineHeight: 1.2 }}>
-                  {admin?.name || admin?.username || 'Admin'}
+                  {admin?.nickname || admin?.username || 'Admin'}
                 </div>
                 <div style={{ fontSize: 11, color: '#999' }}>
-                  {admin?.role === 'superadmin' ? 'Super Admin' : 'Admin'}
+                  {formatRole(admin?.role)}
                 </div>
               </div>
             </div>
 
-            {/* Logout */}
             <button
               onClick={logout}
               className="btn-admin-outline"
@@ -208,8 +203,9 @@ export default function AdminLayout({ children }) {
           </div>
         </div>
 
-        {/* Page Content */}
-        {children}
+        <div style={{ padding: '24px 32px', flex: 1 }}>
+          {children}
+        </div>
       </main>
     </div>
   );

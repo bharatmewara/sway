@@ -4,41 +4,54 @@ import { Toaster } from 'react-hot-toast'
 import { useAuth } from '../hooks/useAuth'
 
 // Auth Pages
-import Login from '../pages/auth/Login'
-import Register from '../pages/auth/Register'
-import ForgotPassword from '../pages/auth/ForgotPassword'
-import VerifyOTP from '../pages/auth/VerifyOTP'
+import Login from '../pages/auth/Login/Login'
+import Register from '../pages/auth/Register/Register'
+import ForgotPassword from '../pages/auth/ForgotPassword/ForgotPassword'
+import Verify from '../pages/auth/Verify/Verify'
+import VerifyOTP from '../pages/auth/VerifyOTP/VerifyOTP'
 
 // Onboarding Pages
-import Welcome from '../pages/onboarding/Welcome'
-import BasicInfo from '../pages/onboarding/BasicInfo'
-import Preferences from '../pages/onboarding/Preferences'
-import ProfileSetup from '../pages/onboarding/ProfileSetup'
+import Welcome from '../pages/onboarding/Welcome/Welcome'
+import BasicInfo from '../pages/onboarding/BasicInfo/BasicInfo'
+import Preferences from '../pages/onboarding/Preferences/Preferences'
+import ProfileSetup from '../pages/onboarding/ProfileSetup/ProfileSetup'
 
 // App Pages
-import Dashboard from '../pages/app/Dashboard'
-import Discover from '../pages/app/Discover'
-import Matches from '../pages/app/Matches'
-import Messages from '../pages/app/Messages'
-import Notifications from '../pages/app/Notifications'
-import Profile from '../pages/app/Profile'
-import Requests from '../pages/Requests'
-import Visitors from '../pages/Visitors'
-import Search from '../pages/Search'
-import Members from '../pages/Members'
-import Crush from '../pages/Crush'
-import PurchaseConnect from '../pages/PurchaseConnect'
+import Dashboard from '../pages/app/Dashboard/Dashboard'
+import Discover from '../pages/app/Discover/Discover'
+import Matches from '../pages/app/Matches/Matches'
+import Messages from '../pages/app/Messages/Messages'
+import PrivateChats from '../pages/app/PrivateChats/PrivateChats'
+import MessageDetails from '../pages/app/MessageDetails/MessageDetails'
+import Notifications from '../pages/app/Notifications/Notifications'
+import Profile from '../pages/app/Profile/Profile'
+import Requests from '../pages/app/Requests/Requests'
+import Visitors from '../pages/app/Visitors/Visitors'
+import Search from '../pages/app/Search/Search'
+import Members from '../pages/app/Members/Members'
+import Crush from '../pages/app/Crush/Crush'
+import PurchaseConnect from '../pages/app/PurchaseConnect/PurchaseConnect'
+import ViewProfile from '../pages/app/ViewProfile/ViewProfile'
 
 // Settings Pages
-import AccountSettings from '../pages/settings/AccountSettings'
-import PrivacySettings from '../pages/settings/PrivacySettings'
-import NotificationSettings from '../pages/settings/NotificationSettings'
-import Subscription from '../pages/settings/Subscription'
+import AccountSettings from '../pages/settings/AccountSettings/AccountSettings'
+import PrivacySettings from '../pages/settings/PrivacySettings/PrivacySettings'
+import NotificationSettings from '../pages/settings/NotificationSettings/NotificationSettings'
+import Subscription from '../pages/settings/Subscription/Subscription'
 
 // Public Landing & Admin
-import Landing from '../pages/Landing'
-import ViewProfile from '../pages/ViewProfile'
+import Landing from '../pages/public/Landing/Landing'
 import AdminApp from '../AdminApp'
+
+const isUserVerified = (u) =>
+  ['verified', 'VERIFIED'].includes(u?.verification_status) &&
+  (!u?.gender_match_status || u.gender_match_status === 'MATCH')
+
+const isProfileCompleted = (u) =>
+  !!u?.profile_completed ||
+  u?.profile_status === 'COMPLETED' ||
+  u?.onboarding_status === 'PROFILE_COMPLETED'
+
 
 function LoadingSpinner() {
   return (
@@ -54,26 +67,40 @@ function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
   const location = useLocation()
   if (loading) return <LoadingSpinner />
-  // If not logged in, redirect to login
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />
-  // Password-authenticated users skip OTP verification directly into the app
+  if (!isUserVerified(user)) return <Navigate to="/verify" replace />
+  if (!isProfileCompleted(user)) return <Navigate to="/profile" replace />
+  return children
+}
+
+function ProfileRoute({ children }) {
+  const { user, loading } = useAuth()
+  const location = useLocation()
+  if (loading) return <LoadingSpinner />
+  if (!user) return <Navigate to="/login" state={{ from: location }} replace />
+  if (!isUserVerified(user)) return <Navigate to="/verify" replace />
   return children
 }
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth()
   if (loading) return <LoadingSpinner />
-  // If already logged in, redirect straight to /home
-  if (user) return <Navigate to="/home" replace />
+  if (user) {
+    if (!isUserVerified(user)) return <Navigate to="/verify" replace />
+    if (!isProfileCompleted(user)) return <Navigate to="/profile" replace />
+    return <Navigate to="/home" replace />
+  }
   return children
 }
 
 function VerifyRoute() {
   const { user, loading } = useAuth()
   if (loading) return <LoadingSpinner />
-  // If already logged in with password, skip OTP verification to /home
-  if (user) return <Navigate to="/home" replace />
-  return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/register" replace />
+  if (isUserVerified(user)) {
+    return <Navigate to={isProfileCompleted(user) ? '/home' : '/profile'} replace />
+  }
+  return <Verify />
 }
 
 function NotFound() {
@@ -127,20 +154,26 @@ export default function AppRoutes() {
         <Route path="/search" element={<P element={<Search />} />} />
         <Route path="/crush" element={<P element={<Crush />} />} />
         <Route path="/purchase" element={<P element={<PurchaseConnect />} />} />
-        <Route path="/profile" element={<P element={<Profile />} />} />
+        <Route path="/purchase-connect" element={<P element={<PurchaseConnect />} />} />
+        <Route path="/purchse-connect" element={<P element={<PurchaseConnect />} />} />
+        <Route path="/profile" element={<ProfileRoute><Profile /></ProfileRoute>} />
         <Route path="/view-profile/:id" element={<P element={<ViewProfile />} />} />
 
         {/* Messaging & Chat */}
-        <Route path="/messages" element={<P element={<Messages />} />} />
-        <Route path="/chats" element={<P element={<Messages />} />} />
-        <Route path="/chat" element={<P element={<Messages />} />} />
-        <Route path="/chat/:userId" element={<P element={<Messages />} />} />
-        <Route path="/chats/:userId" element={<P element={<Messages />} />} />
+        <Route path="/private-chats" element={<P element={<PrivateChats />} />} />
+        <Route path="/chats" element={<P element={<PrivateChats />} />} />
+        <Route path="/messages" element={<P element={<PrivateChats />} />} />
+        <Route path="/chat" element={<P element={<PrivateChats />} />} />
+        <Route path="/message-details/:userId" element={<P element={<MessageDetails />} />} />
+        <Route path="/chats/:userId" element={<P element={<MessageDetails />} />} />
+        <Route path="/chat/:userId" element={<P element={<MessageDetails />} />} />
+        <Route path="/messages/:userId" element={<P element={<MessageDetails />} />} />
 
         {/* Notifications */}
         <Route path="/notifications" element={<P element={<Notifications />} />} />
 
         {/* Settings & Account Management */}
+        <Route path="/settings" element={<P element={<AccountSettings />} />} />
         <Route path="/settings/account" element={<P element={<AccountSettings />} />} />
         <Route path="/settings/privacy" element={<P element={<PrivacySettings />} />} />
         <Route path="/settings/notifications" element={<P element={<NotificationSettings />} />} />

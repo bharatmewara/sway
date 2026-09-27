@@ -1,6 +1,6 @@
 'use strict';
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const SALT_ROUNDS = 12;
 
 const hash    = (plain)         => bcrypt.hash(plain, SALT_ROUNDS);

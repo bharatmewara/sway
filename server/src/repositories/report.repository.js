@@ -19,6 +19,31 @@ class ReportRepository {
        ON CONFLICT (blocker_id, blocked_id) DO NOTHING`,
       [blockerId, blockedId, reason]
     );
+    await pool.query(
+      `UPDATE connection_requests SET status = 'blocked', responded_at = NOW()
+       WHERE (sender_id = $1 AND receiver_id = $2) OR (sender_id = $2 AND receiver_id = $1)`,
+      [blockerId, blockedId]
+    ).catch(() => {});
+  }
+
+  async unblockUser(blockerId, blockedId) {
+    await pool.query(
+      `DELETE FROM blocks WHERE blocker_id = $1 AND blocked_id = $2`,
+      [blockerId, blockedId]
+    );
+  }
+
+  async getBlockedUsers(blockerId) {
+    const res = await pool.query(
+      `SELECT b.id, b.blocked_id, b.reason, b.created_at,
+              u.username, u.nickname, u.profile_photo, u.gender, u.age, u.city
+       FROM blocks b
+       JOIN users u ON u.id = b.blocked_id
+       WHERE b.blocker_id = $1
+       ORDER BY b.created_at DESC`,
+      [blockerId]
+    );
+    return res.rows;
   }
 
   async isBlocked(user1Id, user2Id) {

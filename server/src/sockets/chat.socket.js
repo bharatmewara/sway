@@ -6,16 +6,37 @@ const pool = require('../config/database');
 module.exports = function registerChatHandlers(io, socket) {
   const { id: userId, username } = socket.user;
 
-  socket.on('send_message', ({ receiver_id, content, message_type, conversation_id }) => {
+  socket.on('send_message', async ({ receiver_id, content, message_type, communication_type }) => {
     if (!receiver_id || !content) return;
-    io.to(`user_${receiver_id}`).emit('new_message', {
-      conversation_id,
-      sender_id: userId,
-      sender_username: username,
-      content,
-      message_type: message_type || 'text',
-      created_at: new Date().toISOString(),
-    });
+    try {
+      const chatService = require('../services/chat.service');
+      const commType = communication_type === 'private_message' ? 'private_message' : 'chat';
+      const result = await chatService.sendMessage(
+        userId,
+        parseInt(receiver_id, 10),
+        content,
+        message_type || 'text',
+        null,
+        commType
+      );
+      const isLockedForReceiver = result.message && result.message.is_unlocked === false;
+      const payload = {
+        ...result.message,
+        content: isLockedForReceiver ? null : result.message.content,
+        is_locked: isLockedForReceiver,
+        is_blurred: isLockedForReceiver,
+        required_connects: isLockedForReceiver ? result.config?.chat_message_access_cost || 5 : 0,
+        sender_username: username,
+      };
+      io.to(`user_${receiver_id}`).emit('new_message', payload);
+      io.to(`user_${receiver_id}`).emit('receive_message', payload);
+    } catch (err) {
+      socket.emit('error', {
+        message: err.message || 'Failed to send message',
+        code: err.code,
+        redirect: err.redirect,
+      });
+    }
   });
 
   socket.on('typing', ({ receiver_id, conversation_id }) => {

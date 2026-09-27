@@ -1,0 +1,96 @@
+/* Requests.css - Connection requests page */
+
+.conversation-card,
+.request-card {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #eef0f3;
+  transition: all 0.2s ease;
+  overflow: hidden;
+}
+
+.conversation-card:hover,
+.request-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.profile-img-private-chat {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border: 2px solid #76000b;
+  border-radius: 16px;
+  margin: 0 auto;
+  display: block;
+  background: #f1f5f9;
+}
+
+.trash-btn {
+  background: rgba(193, 44, 44, 0.1);
+  border: none;
+  color: #c12c2c;
+  font-size: 14px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.trash-btn:hover {
+  background: #c12c2c;
+  color: #ffffff;
+}
+
+.request-card .btn-accept {
+  background: linear-gradient(135deg, #c80000, #76000b);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 12px;
+  transition: opacity 0.2s;
+  width: 100%;
+}
+
+.request-card .btn-accept:hover {
+  opacity: 0.92;
+  color: #ffffff;
+}
+
+@media (max-width: 575.98px) {
+  .request-card .card-body {
+    padding: 12px 8px !important;
+  }
+
+  .profile-img-private-chat {
+    width: 68px;
+    height: 68px;
+    border-radius: 12px;
+  }
+
+  .request-card h5 {
+    font-size: 13px !important;
+  }
+
+  .trash-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+    right: 6px;
+    top: 6px;
+  }
+
+  .request-card .btn-accept {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}

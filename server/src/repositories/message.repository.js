@@ -3,14 +3,26 @@
 const pool = require('../config/database');
 
 class MessageRepository {
-  async createMessage({ conversationId, senderId, receiverId, content, messageType = 'text', mediaUrl = null }) {
+  async createMessage({
+    conversationId,
+    senderId,
+    receiverId,
+    content,
+    messageType = 'text',
+    mediaUrl = null,
+    communicationType = 'chat',
+    isUnlocked = true
+  }) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
       const res = await client.query(
-        `INSERT INTO messages (conversation_id, sender_id, receiver_id, content, message_type, media_url, is_read, created_at)
-         VALUES ($1, $2, $3, $4, $5, $6, false, NOW()) RETURNING *`,
-        [conversationId, senderId, receiverId, content, messageType, mediaUrl]
+        `INSERT INTO messages (
+           conversation_id, sender_id, receiver_id, content,
+           message_type, media_url, communication_type, is_unlocked, is_read, created_at
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, false, NOW()) RETURNING *`,
+        [conversationId, senderId, receiverId, content, messageType, mediaUrl, communicationType, isUnlocked]
       );
       const msg = res.rows[0];
 

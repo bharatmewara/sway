@@ -1,0 +1,268 @@
+/* PurchaseConnect.css - Purchase connect credits page matching purchse-connect.html */
+
+.credit-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 22px;
+  position: relative;
+  border: 1.5px solid #ece7f7;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  height: 100%;
+}
+
+.credit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  border-color: #ffccd1;
+}
+
+.credit-card.active {
+  border: 2px solid #76000b;
+  background: linear-gradient(180deg, #ffffff, #fff5f6);
+  box-shadow: 0 8px 25px rgba(118, 0, 11, 0.12);
+}
+
+.badge-popular {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: linear-gradient(135deg, #c80000, #76000b);
+  color: #ffffff;
+  padding: 5px 14px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(118, 0, 11, 0.3);
+}
+
+.credit-icon {
+  min-width: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff4f9a, #ff0059);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+
+.credit-icon.purple {
+  background: linear-gradient(135deg, #9b6dff, #7a2cff);
+}
+
+.credit-icon.dark {
+  background: linear-gradient(135deg, #6a11cb, #3b0f85);
+}
+
+.info-strip {
+  background: linear-gradient(90deg, #fff0f1, #fcedee);
+  border: 1px solid #ffd6da;
+  color: #76000b;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-strip i {
+  font-size: 18px;
+  color: #c40000;
+}
+
+.side-card,
+.payment-card,
+.support-card,
+.secure-box {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid #eef0f3;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.secure-box {
+  padding: 12px 18px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.secure-box i {
+  font-size: 28px;
+  color: #12b76a;
+}
+
+.secure-box strong {
+  display: block;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.secure-box small {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.feature {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.feature i {
+  font-size: 22px;
+  color: #76000b;
+  flex-shrink: 0;
+}
+
+.feature strong {
+  display: block;
+  font-size: 13.5px;
+  color: #1e293b;
+}
+
+.feature p {
+  margin: 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.support-card .credit-icon {
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+}
+
+.support-card h5 {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.support-card p {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.support-card strong {
+  color: #76000b;
+  font-size: 13px;
+}
+
+.total-box {
+  background: #fff8f8;
+  border: 1.5px dashed #fca5a5;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.total-box span {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.total-box h3 {
+  color: #76000b;
+  font-weight: 700;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.payment-methods {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.payment-card2 {
+  cursor: pointer;
+  margin: 0;
+}
+
+.payment-card2 input {
+  display: none;
+}
+
+.payment-content {
+  min-width: 105px;
+  height: 50px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px 10px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.payment-content img {
+  height: 20px;
+  max-width: 65px;
+  object-fit: contain;
+}
+
+.payment-content::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 2px solid #cbd5e1;
+  border-radius: 50%;
+  position: absolute;
+  left: 10px;
+  transition: all 0.15s ease;
+}
+
+.payment-card2 input:checked + .payment-content {
+  border-color: #76000b;
+  background: #fff8f8;
+  box-shadow: 0 2px 10px rgba(118, 0, 11, 0.08);
+}
+
+.payment-card2 input:checked + .payment-content::before {
+  background: #76000b;
+  border-color: #76000b;
+  box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+@media (max-width: 767.98px) {
+  .credit-card {
+    padding: 16px;
+  }
+
+  .credit-icon {
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .side-card,
+  .payment-card,
+  .support-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .secure-box {
+    padding: 10px 14px;
+  }
+
+  .payment-content {
+    min-width: 90px;
+    height: 46px;
+  }
+}

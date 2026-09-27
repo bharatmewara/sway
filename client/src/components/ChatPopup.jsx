@@ -1,32 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
 
 export default function ChatPopup({ userId, onClose }) {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, showInsufficientConnects } = useAuth();
+  const navigate = useNavigate();
   const { socket } = useSocket();
   const [messages, setMessages] = useState([]);
   const [otherUser, setOtherUser] = useState(null);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(true);
   const chatEndRef = useRef(null);
+  const isFemale = (user?.verified_gender || user?.gender) === 'female' || user?.connect_required_for_chat === false;
 
   useEffect(() => {
     const loadChat = async () => {
       try {
         const [pRes, mRes] = await Promise.all([
-          api.get(`/users/profile/${userId}`),
-          api.get(`/messages/${userId}`)
+          api.get(`/users/${userId}`),
+          api.get(`/chat/with/${userId}`).catch(() => ({ data: { messages: [] } }))
         ]);
         setOtherUser(pRes.data.user || pRes.data);
         setMessages(mRes.data.messages || []);
       } catch (e) {
         if (e.response?.status === 402) {
-          toast.error(e.response.data.message || 'Insufficient credits to view this chat.');
-          onClose(); // Close popup if they can't afford to view it
+          onClose();
+          showInsufficientConnects({
+            message: e.response.data?.message || 'Insufficient Connects to view this chat.',
+            requiredConnects: e.response.data?.required_connects ?? 5,
+            currentConnects: e.response.data?.credits ?? user?.connect_credits ?? 0,
+            returnTo: `/chat/${userId}?type=chat`,
+          });
         } else {
           console.error("Failed to load chat data", e);
         }
@@ -35,7 +42,7 @@ export default function ChatPopup({ userId, onClose }) {
       }
     };
     if (userId) loadChat();
-  }, [userId, onClose]);
+  }, [userId, onClose, navigate]);
 
   useEffect(() => {
     if (socket) {
@@ -84,18 +91,22 @@ export default function ChatPopup({ userId, onClose }) {
     e.preventDefault();
     if (!text.trim()) return;
     try {
-      const res = await api.post('/messages/send', { receiver_id: userId, content: text });
-      const sentMessage = res.data?.data || res.data?.sent_message;
-      if (sentMessage) {
-        setMessages(prev => [...prev, sentMessage]);
-      }
-      if (res.data.remaining_credits !== undefined) {
+      const res = await api.post('/chat/messages', { receiver_id: userId, content: text });
+      const sentMessage = res.data?.message || res.data?.data;
+      if (sentMessage) setMessages(prev => [...prev, sentMessage]);
+      if (res.data?.remaining_credits !== undefined && !isFemale) {
         updateUser({ connect_credits: res.data.remaining_credits });
       }
       setText('');
     } catch(e) {
       if (e.response?.status === 402) {
-        toast.error(e.response?.data?.message || 'You do not have sufficient credit.');
+        onClose();
+        showInsufficientConnects({
+          message: e.response?.data?.message || 'Insufficient Connects to send this message.',
+          requiredConnects: e.response?.data?.required_connects ?? 5,
+          currentConnects: e.response?.data?.credits ?? user?.connect_credits ?? 0,
+          returnTo: `/chat/${userId}?type=chat`,
+        });
       } else {
         toast.error(e.response?.data?.error || e.response?.data?.message || 'Failed to send');
       }
@@ -122,7 +133,7 @@ export default function ChatPopup({ userId, onClose }) {
       >
         <div className="position-relative me-2">
           <img 
-            src={otherUser?.profile_photo ? `http://localhost:5000${otherUser.profile_photo}` : (otherUser?.gender === 'female' ? '/img/girl.png' : '/img/boy.png')} 
+            src={otherUser?.profile_photo || (otherUser?.gender === 'female' ? '/img/girl.png' : '/img/boy.png')} 
             alt="Avatar" 
             style={{ width: 35, height: 35, borderRadius: '50%', objectFit: 'cover' }}
           />
@@ -146,6 +157,7 @@ export default function ChatPopup({ userId, onClose }) {
         ) : (
           messages.map(m => {
             const isMe = m.sender_id === user.id;
+            const locked = !isFemale && !isMe && (m.is_locked || m.is_blurred);
             return (
               <div key={m.id} className={`d-flex mb-2 ${isMe ? 'justify-content-end' : 'justify-content-start'}`}>
                 <div 
@@ -156,7 +168,20 @@ export default function ChatPopup({ userId, onClose }) {
                     fontSize: '13px'
                   }}
                 >
-                  {m.content}
+                  {locked ? (
+                    <div>
+                      <div className="fw-bold text-danger mb-1">[ BLURRED MESSAGE ]</div>
+                      <Link
+                        to={`/message-details/${userId}?type=chat`}
+                        className="btn btn-sm btn-wine py-0 px-2 text-white"
+                        onClick={onClose}
+                      >
+                        Unlock ({m.required_connects ?? 5} Connects)
+                      </Link>
+                    </div>
+                  ) : (
+                    m.content
+                  )}
                 </div>
               </div>
             );

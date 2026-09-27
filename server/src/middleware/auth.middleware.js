@@ -17,11 +17,14 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const ADMIN_ROLES = ['super_admin', 'superadmin', 'admin', 'moderator', 'finance_admin', 'support_admin', 'analyst'];
+
 const verifyAdmin = (req, res, next) => {
   verifyToken(req, res, () => {
-    if (req.user?.role === 'admin' || req.user?.role === 'superadmin') return next();
+    if (ADMIN_ROLES.includes(String(req.user?.role || '').toLowerCase())) return next();
     return fail(res, 'Access denied. Admins only.', 403);
   });
 };
 
-module.exports = { verifyToken, verifyAdmin };
+module.exports = { verifyToken, verifyAdmin, ADMIN_ROLES };
+

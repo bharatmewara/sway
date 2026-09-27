@@ -1,0 +1,38 @@
+/* Login.css - User authentication login page */
+
+.login_page {
+  padding: 80px 16px 60px;
+  display: block;
+  min-height: 100vh;
+  background: #fff8ef;
+}
+
+.register-card {
+  border: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.login_page .form-control {
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #dce6ef;
+  font-size: 14px;
+}
+
+.login_page .form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(118, 0, 11, 0.15);
+  border-color: #76000b;
+}
+
+@media (max-width: 575.98px) {
+  .login_page {
+    padding: 40px 12px;
+  }
+
+  .register-card {
+    padding: 24px 18px !important;
+  }
+}

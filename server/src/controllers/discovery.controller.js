@@ -20,6 +20,14 @@ exports.swipe = async (req, res) => {
 
     const result = await matchingService.processSwipe(req.user.id, parseInt(target_user_id, 10), type, message);
 
+    if (type !== 'pass') {
+      req.app.get('io')?.to(`user_${target_user_id}`).emit('new_notification', {
+        type: 'like',
+        related_user_id: req.user.id,
+        sender_username: req.user.username,
+      });
+    }
+
     if (result.matched) {
       req.app.get('io')?.to(`user_${target_user_id}`).emit('new_match', {
         user: { id: req.user.id, username: req.user.username },
@@ -29,6 +37,6 @@ exports.swipe = async (req, res) => {
 
     return ok(res, { message: 'Swipe recorded.', ...result });
   } catch (err) {
-    return fail(res, err.message, 500);
+    return fail(res, err.message, err.status || 400);
   }
 };

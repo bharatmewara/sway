@@ -1,0 +1,145 @@
+/* RightBar.css - 3-card sidebar: Active Conversations, Chat Requests, Who Viewed You */
+
+.rightbar {
+  background: #ffffff;
+  border: 1px solid #eeeeee;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.rightbar h6 {
+  font-size: 15px;
+  color: #2b1111;
+}
+
+.scrool_right {
+  max-height: 230px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding: 2px 0;
+  border-radius: 10px;
+  transition: opacity 0.15s ease;
+}
+
+.user-row:last-child {
+  margin-bottom: 0;
+}
+
+.user-row:hover {
+  opacity: 0.9;
+}
+
+.user-row .avatar {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #dddddd, #999999);
+  border: none;
+}
+
+.user-row .avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.user-row b {
+  font-size: 14px;
+  font-weight: 700;
+  color: #2b1111;
+  line-height: 1.25;
+}
+
+.user-row small {
+  font-size: 12.5px;
+  color: #555555;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+  margin-top: 2px;
+}
+
+.small-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #12b76a;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.user-row .badge-dot {
+  position: static !important;
+  margin-left: auto;
+  background: #c40000;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
+/* Who Viewed You overlapping circles */
+.who-viewed-avatars .profile-img {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f1c8b8, #76443c);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: -12px;
+  border: 3px solid #ffffff;
+  overflow: hidden;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.who-viewed-avatars .profile-img:hover {
+  transform: translateY(-2px);
+  z-index: 5;
+}
+
+.who-viewed-avatars .profile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.who-viewed-avatars .profile-img-more {
+  color: #2b1111;
+  font-weight: 600;
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+@media (max-width: 991.98px) {
+  .rightbar {
+    padding: 18px;
+  }
+}

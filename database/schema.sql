@@ -32,7 +32,9 @@ CREATE TABLE IF NOT EXISTS users (
   
   -- Profile Details
   bio TEXT,
-  profile_photo VARCHAR(255),
+  profile_photo TEXT,
+  photo_bytes BYTEA,
+  photo_mime VARCHAR(50),
   video_intro VARCHAR(255),
   voice_intro VARCHAR(255),
   marital_status VARCHAR(30) DEFAULT 'single' CHECK (marital_status IN ('married', 'single', 'divorced', 'widowed', 'in_relationship')),
@@ -68,9 +70,13 @@ CREATE TABLE IF NOT EXISTS users (
   apple_id VARCHAR(255),
   facebook_id VARCHAR(255),
   
-  -- Verification
-  verification_status VARCHAR(20) DEFAULT 'pending' CHECK (verification_status IN ('pending', 'under_review', 'verified', 'rejected')),
-  verification_type VARCHAR(20) CHECK (verification_type IN ('facial', 'document')),
+  -- Verification & Onboarding
+  verification_status VARCHAR(50) DEFAULT 'NOT_VERIFIED',
+  verification_type VARCHAR(30),
+  verified_gender VARCHAR(10),
+  connect_required_for_chat BOOLEAN DEFAULT TRUE,
+  profile_completed BOOLEAN DEFAULT FALSE,
+  onboarding_status VARCHAR(50) DEFAULT 'NOT_VERIFIED',
   verified_at TIMESTAMP,
   
   -- Credits & Monetization
@@ -309,7 +315,9 @@ CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
 CREATE TABLE IF NOT EXISTS private_photos (
   id SERIAL PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  photo_url VARCHAR(255) NOT NULL,
+  photo_url TEXT NOT NULL,
+  photo_bytes BYTEA,
+  photo_mime VARCHAR(50),
   is_blurred BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMP DEFAULT NOW()
 );

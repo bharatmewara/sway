@@ -13,16 +13,24 @@ class ProfileService {
     return profileRepo.updateProfile(userId, updates);
   }
 
-  async updateAvatar(userId, photoUrl) {
-    return profileRepo.updatePhoto(userId, photoUrl);
+  async updateAvatar(userId, photoUrl, photoBytes = null, photoMime = null) {
+    return profileRepo.updatePhoto(userId, photoUrl, photoBytes, photoMime);
   }
 
   async getPhotos(userId) {
     return profileRepo.getPhotos(userId);
   }
 
-  async addPhoto(userId, photoUrl, isBlurred = false) {
-    return profileRepo.addPhoto(userId, photoUrl, isBlurred);
+  async addPhoto(userId, photoUrl, isBlurred = false, photoBytes = null, photoMime = null) {
+    return profileRepo.addPhoto(userId, photoUrl, isBlurred, photoBytes, photoMime);
+  }
+
+  async getUserAvatarBytes(userId) {
+    return profileRepo.getUserAvatarBytes(userId);
+  }
+
+  async getPrivatePhotoBytes(photoId) {
+    return profileRepo.getPrivatePhotoBytes(photoId);
   }
 
   async deletePhoto(photoId, userId) {

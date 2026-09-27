@@ -1,0 +1,126 @@
+/* ViewProfile.css - View Member Profile */
+
+.profile-card2 {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 26px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #eef0f3;
+  height: 100%;
+}
+
+.profile-avatar {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 3px solid #76000b;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.online-dot {
+  width: 18px;
+  height: 18px;
+  background: #12b76a;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  display: inline-block;
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+}
+
+.profile-list .item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.profile-list .item:last-child {
+  border-bottom: none;
+}
+
+.profile-list button {
+  color: #334155;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.profile-list button:hover {
+  color: #76000b;
+}
+
+.personality-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.personality-list li {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #334155;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.btn-profile-chat {
+  background: linear-gradient(135deg, #c80000, #76000b);
+  color: #ffffff;
+  border: 0;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 12px;
+  width: 100%;
+  transition: opacity 0.2s;
+}
+
+.btn-profile-chat:hover {
+  opacity: 0.92;
+  color: #ffffff;
+}
+
+.btn-profile-req {
+  background: #fff0f1;
+  color: #76000b;
+  border: 1.5px solid #ffccd1;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 12px;
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.btn-profile-req:hover {
+  background: #76000b;
+  color: #ffffff;
+  border-color: #76000b;
+}
+
+@media (max-width: 575.98px) {
+  .profile-card2 {
+    padding: 18px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+
+  .online-dot {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+    bottom: 4px;
+    right: 4px;
+  }
+}

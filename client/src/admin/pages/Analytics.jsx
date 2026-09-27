@@ -1,74 +1,142 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
-import toast from 'react-hot-toast';
 
 export default function Analytics() {
-  const [data, setData] = useState(null);
+  const navigate = useNavigate();
+  const [dash, setDash] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/admin/dashboard').then(r => setData(r.data)).catch(() => {});
+    Promise.all([
+      api.get('/admin/dashboard'),
+      api.get('/admin/analytics'),
+    ])
+      .then(([dRes, aRes]) => {
+        setDash(dRes.data);
+        setAnalytics(aRes.data);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (!data) return <div className="text-center py-5"><div className="spinner-border text-danger"></div></div>;
+  if (loading) {
+    return (
+      <div className="loading-spinner">
+        <div className="spinner-border text-danger" />
+        <span>Loading engagement analytics...</span>
+      </div>
+    );
+  }
+
+  const d = dash || {};
+  const a = analytics || {};
+  const funnel = a.onboardingFunnel || {};
 
   return (
     <div>
-      <div className="page-header"><h4>Platform Analytics</h4></div>
-
-      {/* KPI Cards */}
-      <div className="row g-3 mb-4">
-        {[
-          { label: 'Total Users', value: data.totalUsers, icon: '👥', color: '#3b82f6' },
-          { label: 'Online Now', value: data.onlineUsers, icon: '🟢', color: '#22c55e' },
-          { label: 'Verified', value: data.totalVerified, icon: '✅', color: '#8b5cf6' },
-          { label: 'Revenue (₹)', value: `₹${(data.totalRevenue || 0).toLocaleString()}`, icon: '💰', color: '#f59e0b' },
-        ].map(kpi => (
-          <div key={kpi.label} className="col-6 col-md-3">
-            <div className="card shadow-sm border-0 rounded-4 p-3">
-              <div className="d-flex align-items-center gap-2 mb-1">
-                <span style={{ fontSize: 20 }}>{kpi.icon}</span>
-                <small className="text-muted">{kpi.label}</small>
-              </div>
-              <h3 className="fw-bold mb-0" style={{ color: kpi.color }}>{kpi.value}</h3>
-            </div>
+      <div className="page-header">
+        <div>
+          <h4>Engagement & Funnel Analytics</h4>
+          <div className="breadcrumb-text">
+            Likes, Crushes, Profile Visits, Onboarding Funnel & Verification Breakdown.
           </div>
-        ))}
+        </div>
       </div>
 
-      {/* City-wise */}
+      {/* Onboarding & Verification Funnel */}
+      <div className="row g-3 mb-4">
+        <div className="col-md-3">
+          <div className="stat-card">
+            <div className="stat-value text-primary">{funnel.registered ?? d.totalUsers ?? 0}</div>
+            <div className="stat-label">1. Registered Users</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="stat-card">
+            <div className="stat-value text-info">{funnel.gender_matched ?? 0}</div>
+            <div className="stat-label">2. AI Gender Matched</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="stat-card">
+            <div className="stat-value text-success">{funnel.selfie_verified ?? d.totalVerified ?? 0}</div>
+            <div className="stat-label">3. Live Selfie Verified</div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="stat-card">
+            <div className="stat-value" style={{ color: '#76000b' }}>{funnel.profile_completed ?? d.completedProfiles ?? 0}</div>
+            <div className="stat-label">4. Profile Completed</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Liked, Crushed, and Visited Users */}
       <div className="row g-4">
-        <div className="col-md-6">
-          <div className="card shadow-sm border-0 rounded-4 p-4">
-            <h5 className="fw-bold mb-3">Top Cities</h5>
-            {(data.cityWiseUsers || []).map((c, i) => (
-              <div key={i} className="d-flex align-items-center gap-3 mb-3">
-                <span className="text-muted" style={{ minWidth: 20, fontSize: 13 }}>#{i + 1}</span>
-                <div className="flex-grow-1">
-                  <div className="d-flex justify-content-between mb-1">
-                    <span style={{ fontSize: 13, fontWeight: 600 }}>{c.city || 'Unknown'}</span>
-                    <span style={{ fontSize: 12, color: '#76000b' }}>{c.count} users</span>
-                  </div>
-                  <div className="progress" style={{ height: 5, borderRadius: 3 }}>
-                    <div className="progress-bar" style={{ width: `${Math.min(c.count * 3, 100)}%`, background: '#76000b' }}></div>
-                  </div>
-                </div>
+        <div className="col-lg-4">
+          <div className="table-card p-4 h-100">
+            <h6 className="fw-bold mb-3">
+              <i className="bi bi-heart-fill text-danger me-2" />
+              Most Liked Profiles
+            </h6>
+            {(a.topLikedUsers || []).map((u, i) => (
+              <div
+                key={u.id}
+                className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/admin/users/${u.id}`)}
+              >
+                <span>#{i + 1} <strong>{u.username}</strong> ({u.gender})</span>
+                <span className="badge bg-danger">{u.likes_received} likes</span>
               </div>
             ))}
+            {(a.topLikedUsers || []).length === 0 && <div className="text-muted small">No likes recorded yet.</div>}
           </div>
         </div>
 
-        <div className="col-md-6">
-          <div className="card shadow-sm border-0 rounded-4 p-4">
-            <h5 className="fw-bold mb-3">Verification Stats</h5>
-            {data.verificationStats && Object.entries(data.verificationStats).map(([status, count]) => (
-              <div key={status} className="d-flex justify-content-between align-items-center py-2 border-bottom">
-                <span className="text-capitalize" style={{ fontSize: 13 }}>{status.replace('_', ' ')}</span>
-                <span className={`badge rounded-pill ${status === 'verified' ? 'bg-success' : status === 'under_review' ? 'bg-warning text-dark' : 'bg-danger'}`}>
-                  {count}
+        <div className="col-lg-4">
+          <div className="table-card p-4 h-100">
+            <h6 className="fw-bold mb-3">
+              <i className="bi bi-stars text-warning me-2" />
+              Most Crushed Profiles
+            </h6>
+            {(a.topCrushedUsers || []).map((u, i) => (
+              <div
+                key={u.id}
+                className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/admin/users/${u.id}`)}
+              >
+                <span>#{i + 1} <strong>{u.username}</strong> ({u.gender})</span>
+                <span className="badge bg-warning text-dark">
+                  {u.crushes_received} ({u.mutual_crushes} mutual)
                 </span>
               </div>
             ))}
+            {(a.topCrushedUsers || []).length === 0 && <div className="text-muted small">No crushes recorded yet.</div>}
+          </div>
+        </div>
+
+        <div className="col-lg-4">
+          <div className="table-card p-4 h-100">
+            <h6 className="fw-bold mb-3">
+              <i className="bi bi-eye-fill text-primary me-2" />
+              Most Visited Profiles
+            </h6>
+            {(a.topVisitedProfiles || []).map((u, i) => (
+              <div
+                key={u.id}
+                className="d-flex justify-content-between align-items-center py-2 border-bottom"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/admin/users/${u.id}`)}
+              >
+                <span>#{i + 1} <strong>{u.username}</strong> ({u.gender})</span>
+                <span className="badge bg-primary">{u.profile_visits} visits</span>
+              </div>
+            ))}
+            {(a.topVisitedProfiles || []).length === 0 && <div className="text-muted small">No profile visits recorded yet.</div>}
           </div>
         </div>
       </div>

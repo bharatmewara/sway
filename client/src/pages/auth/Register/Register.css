@@ -1,0 +1,104 @@
+/* Register.css - User registration & gender selection */
+
+.register-page {
+  padding: 60px 16px;
+  min-height: 100vh;
+  background: #fff8ef;
+}
+
+.register-card {
+  border: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+}
+
+.gender-select {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.gender-card {
+  width: 160px;
+  height: 180px;
+  border: 2px solid #eef0f3;
+  border-radius: 22px;
+  background: #ffffff;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: 0.25s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+}
+
+.gender-card input {
+  display: none;
+}
+
+.gender-card .title {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 18px;
+}
+
+.gender-card .girl { color: #ec3f82; }
+.gender-card .boy { color: #2877ee; }
+
+.gender-card img {
+  width: 110px;
+  margin-top: 8px;
+}
+
+.gender-card:hover,
+.gender-card:has(input:checked) {
+  transform: translateY(-4px);
+  border-color: #ec3f82;
+  box-shadow: 0 10px 30px rgba(236, 63, 130, 0.18);
+}
+
+.gender-card:has(input[value="boy"]:checked) {
+  border-color: #2877ee;
+  box-shadow: 0 10px 30px rgba(40, 119, 238, 0.18);
+}
+
+.gender-card:has(input:checked)::after {
+  content: "✓";
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ec3f82;
+  color: #ffffff;
+  line-height: 24px;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.gender-card:has(input[value="boy"]:checked)::after {
+  background: #2877ee;
+}
+
+@media (max-width: 575.98px) {
+  .register-page {
+    padding: 30px 12px;
+  }
+
+  .register-card {
+    padding: 24px 16px !important;
+  }
+
+  .gender-card {
+    width: 130px;
+    height: 155px;
+  }
+
+  .gender-card img {
+    width: 85px;
+  }
+}
