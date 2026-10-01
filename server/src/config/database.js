@@ -9,15 +9,14 @@ const pool = new Pool({
   database:                env.DB_NAME,
   user:                    env.DB_USER,
   password:                env.DB_PASSWORD,
-  max:                     20,
+  max:                     10,
   idleTimeoutMillis:       30000,
-  connectionTimeoutMillis: 2000,
+  connectionTimeoutMillis: 15000,
   ssl: env.DB_SSL ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('error', (err) => {
-  console.error('[DB] Unexpected error on idle client:', err.message);
-  process.exit(-1);
+  console.error('[DB] Unexpected error on idle client (reconnecting automatically):', err.message);
 });
 
 pool.query('SELECT NOW()', (err, res) => {
