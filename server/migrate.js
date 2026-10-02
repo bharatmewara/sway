@@ -607,8 +607,9 @@ CREATE TABLE IF NOT EXISTS admin_audit_logs (
   user_agent TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
+`;
+
 const ALTER_SQL = `
--- Safely add missing columns to existing tables
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_bytes BYTEA;
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_mime VARCHAR(50);
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selected_gender VARCHAR(20);
