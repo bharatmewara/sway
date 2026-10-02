@@ -215,52 +215,71 @@ export default function PrivateChats() {
     <DashboardLayout>
       <div className="row g-3">
         <div className="col-12 col-xl-9">
-          {/* Header & Communication System Switcher */}
-          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <div>
-              <h4 className="fw-bold mb-1">
-                {commType === 'private_message' ? 'Private Messages (72-Hour Sessions)' : 'Chat (Real-Time Conversations)'}
-              </h4>
-              <p className="text-muted small mb-0">
-                {commType === 'private_message'
-                  ? 'Active Private Message sessions remain open for 72 hours before expiring.'
-                  : 'Chat expires after 1 hour if there is no new reply from the female member.'}
-              </p>
+          {/* ── DEDICATED COMPACT HERO HEADER ── */}
+          <div className="chat-hero-card mb-3">
+            <div className="d-flex align-items-start justify-content-between gap-2 flex-wrap mb-2">
+              <div className="d-flex align-items-center gap-2">
+                <div className="chat-hero-icon-badge">
+                  <i className={commType === 'private_message' ? 'bi bi-shield-lock-fill' : 'bi bi-chat-dots-fill'} />
+                </div>
+                <div>
+                  <h3 className="chat-hero-title mb-0">
+                    {commType === 'private_message' ? 'Private Messages' : 'Chat'}
+                  </h3>
+                  <span className="chat-hero-subtitle text-muted">
+                    {commType === 'private_message' ? 'Discreet 72-Hour Sessions' : 'Real-Time 1-Hour Sessions'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Informational Expiration Badge / Chip */}
+              <div className="chat-expiry-chip">
+                <i className="bi bi-clock-history text-danger me-1" />
+                <span>
+                  {commType === 'private_message'
+                    ? 'Private Messages stay accessible for 72 hours'
+                    : 'Active chats expire after 1 hour without a new reply'}
+                </span>
+              </div>
             </div>
 
-            <div className="d-flex flex-wrap align-items-center gap-2">
+            <div className="d-flex align-items-center justify-content-between gap-2 flex-wrap pt-2 mt-2 border-top">
+              <span className="text-muted small">
+                {commType === 'private_message'
+                  ? 'Send and receive encrypted private messages that stay active for 72 hours.'
+                  : 'Fast direct chat for active members with 1-hour expiration between replies.'}
+              </span>
+
+              {/* Secondary Expired Sessions Toggle */}
               <button
                 type="button"
-                className={`btn btn-sm rounded-pill px-3 ${showExpired ? 'btn-wine text-white' : 'btn-outline-secondary'}`}
+                className={`expired-sessions-toggle btn btn-sm ${showExpired ? 'active' : ''}`}
                 onClick={() => setShowExpired((prev) => !prev)}
+                title={showExpired ? 'Hide expired sessions' : 'View expired sessions'}
               >
-                <i className="bi bi-clock-history me-1" />
-                {showExpired ? 'Showing All (Including Expired)' : 'Show Expired Sessions'}
+                <i className="bi bi-arrow-repeat me-1" />
+                {showExpired ? 'Hide Expired' : 'View Expired Sessions'}
               </button>
             </div>
           </div>
 
-          {/* System Tabs */}
-          <div className="d-flex gap-2 mb-4">
+          {/* ── SEGMENTED 2-COLUMN NAVIGATION CONTROL ── */}
+          <div className="comm-segmented-control mb-3">
             <button
               type="button"
-              className={`btn rounded-pill px-4 py-2 fw-semibold ${
-                commType === 'private_message' ? 'btn-wine text-white' : 'btn-light border'
-              }`}
+              className={`segmented-tab-btn ${commType === 'private_message' ? 'active' : ''}`}
               onClick={() => setCommType('private_message')}
             >
-              <i className="bi bi-envelope-paper-heart me-2" />
-              Private Messages (72h)
+              <i className="bi bi-lock-fill" />
+              <span>Private Messages (72h)</span>
             </button>
             <button
               type="button"
-              className={`btn rounded-pill px-4 py-2 fw-semibold ${
-                commType === 'chat' ? 'btn-wine text-white' : 'btn-light border'
-              }`}
+              className={`segmented-tab-btn ${commType === 'chat' ? 'active' : ''}`}
               onClick={() => setCommType('chat')}
             >
-              <i className="bi bi-chat-dots me-2" />
-              Chat (1h)
+              <i className="bi bi-chat-dots-fill" />
+              <span>Chat (1h)</span>
             </button>
           </div>
 
@@ -271,18 +290,26 @@ export default function PrivateChats() {
               </div>
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="card border-0 shadow-sm rounded-4 p-5 text-center text-muted">
-              <i className="bi bi-chat-heart display-3 d-block mb-3 text-danger opacity-50" />
-              <h5 className="fw-bold">
-                {commType === 'private_message' ? 'No Active Private Messages Yet' : 'No Active Chats Yet'}
+            <div className="chat-empty-card text-center p-4 p-md-5 rounded-4 mb-3">
+              <div className="empty-icon-chat mx-auto mb-3">
+                <i className={commType === 'private_message' ? 'bi bi-envelope-paper-heart-fill' : 'bi bi-chat-heart-fill'} />
+              </div>
+              <h5 className="fw-bold mb-2 text-dark">
+                {showExpired
+                  ? 'No Expired Conversations Found'
+                  : commType === 'private_message'
+                  ? 'No Active Private Messages Yet'
+                  : 'No Active Chats Yet'}
               </h5>
-              <p className="small mb-4">
-                {commType === 'private_message'
-                  ? 'Start a 72-hour Private Message session from any member profile!'
-                  : 'Start a real-time Chat from any member profile!'}
+              <p className="text-muted small max-w-450 mx-auto mb-4">
+                {showExpired
+                  ? 'You do not have any expired communication sessions in this category.'
+                  : commType === 'private_message'
+                  ? 'Start a 72-hour Private Message session from any verified member profile to connect at your own pace.'
+                  : 'Start a real-time Chat session from any member profile for immediate live conversation.'}
               </p>
-              <Link to="/home" className="btn btn-wine mx-auto rounded-pill px-4">
-                Explore Members
+              <Link to="/discover" className="btn btn-wine rounded-pill px-4 py-2 fw-semibold">
+                <i className="bi bi-compass me-2" /> Discover Members
               </Link>
             </div>
           ) : (

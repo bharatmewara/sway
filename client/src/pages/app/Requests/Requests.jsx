@@ -171,58 +171,134 @@ export default function Requests() {
     }
   }
 
+  const pendingCount = currentList.filter((r) => r.status === 'PENDING').length
+  const awaitingCount = currentList.filter((r) => r.status === 'APPROVED_PENDING_CONNECTS').length
+  const unlockedCount = currentList.filter((r) => r.status === 'ACCESS_GRANTED').length
+  const rejectedCount = currentList.filter((r) => r.status === 'REJECTED').length
+
+  const filterTabs = [
+    { id: 'ALL', label: 'All', count: currentList.length },
+    { id: 'PENDING', label: 'Pending', count: pendingCount },
+    { id: 'APPROVED_PENDING_CONNECTS', label: 'Awaiting Connects', count: awaitingCount },
+    { id: 'ACCESS_GRANTED', label: 'Unlocked', count: unlockedCount },
+    { id: 'REJECTED', label: 'Declined', count: rejectedCount },
+  ]
+
   return (
     <DashboardLayout>
       <div className="row g-3">
         <div className="col-12 col-xl-9">
-          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-            <div>
-              <h4 className="fw-bold mb-1">
-                <i className="bi bi-images text-danger me-2" />
-                Private Photo Requests
-              </h4>
-              <p className="text-muted small mb-0">
-                {isFemale
-                  ? `Approve or decline requests from male members to view your private photos (${photoAccessCost} Connects are charged to them upon your approval).`
-                  : `Track your requests to view female members' private photos (${photoAccessCost} Connects are deducted only when your request is approved).`}
-              </p>
+          {/* ── DEDICATED MOBILE-READY HERO HEADER ── */}
+          <div className="requests-hero-card mb-3">
+            <div className="d-flex align-items-start justify-content-between gap-2 flex-wrap mb-2">
+              <div className="d-flex align-items-center gap-2">
+                <div className="requests-hero-icon-badge">
+                  <i className="bi bi-shield-lock-fill" />
+                </div>
+                <div>
+                  <h3 className="requests-hero-title mb-0">Private Photo Requests</h3>
+                  <span className="requests-hero-subtitle text-muted">
+                    {isFemale ? 'Female Member Access Controls' : 'Private Gallery Permissions'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Dynamic Admin-Configured Connect Cost Chip */}
+              <div className="connect-cost-pill">
+                <i className="bi bi-lightning-charge-fill text-danger me-1" />
+                <span>
+                  <strong>{photoAccessCost} Connects</strong> per unlock
+                </span>
+              </div>
             </div>
 
-            <div className="d-flex flex-wrap gap-1">
-              {['ALL', 'PENDING', 'APPROVED_PENDING_CONNECTS', 'ACCESS_GRANTED', 'REJECTED'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setStatusFilter(st)}
-                  className={`btn btn-sm rounded-pill px-3 ${
-                    statusFilter === st ? 'btn-wine text-white' : 'btn-outline-secondary'
-                  }`}
-                  style={{ fontSize: 12 }}
-                >
-                  {st === 'ALL'
-                    ? 'All'
-                    : st === 'PENDING'
-                      ? 'Pending'
-                      : st === 'APPROVED_PENDING_CONNECTS'
-                        ? 'Awaiting Connects'
-                        : st === 'ACCESS_GRANTED'
-                          ? 'Unlocked'
-                          : 'Declined'}
-                </button>
-              ))}
+            <p className="requests-hero-description mb-3">
+              {isFemale
+                ? `Review requests from male members to view your locked private photos. Connects (${photoAccessCost}) are charged to them only upon your approval.`
+                : `Track your requests to unlock private photos. ${photoAccessCost} Connects are deducted only when the member grants you access.`}
+            </p>
+
+            {/* Compact Summary Strip */}
+            <div className="requests-summary-strip d-flex align-items-center gap-2 flex-wrap">
+              <span className="summary-pill total">
+                <span className="summary-num">{currentList.length}</span> Total
+              </span>
+              <span className="summary-pill pending">
+                <span className="summary-num">{pendingCount}</span> Pending
+              </span>
+              <span className="summary-pill unlocked">
+                <span className="summary-num">{unlockedCount}</span> Unlocked
+              </span>
+              {awaitingCount > 0 && (
+                <span className="summary-pill awaiting">
+                  <span className="summary-num">{awaitingCount}</span> Awaiting Connects
+                </span>
+              )}
+
+              {/* Received vs Sent Toggle if user has both */}
+              {incomingRequests.length > 0 && sentRequests.length > 0 && (
+                <div className="ms-auto d-flex align-items-center gap-1 border-start ps-2">
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'incoming' ? 'btn-wine text-white' : 'btn-light'}`}
+                    style={{ fontSize: 11 }}
+                    onClick={() => setActiveTab('incoming')}
+                  >
+                    Received ({incomingRequests.length})
+                  </button>
+                  <button
+                    type="button"
+                    className={`btn btn-xs rounded-pill px-2 py-1 ${activeTab === 'sent' ? 'btn-wine text-white' : 'btn-light'}`}
+                    style={{ fontSize: 11 }}
+                    onClick={() => setActiveTab('sent')}
+                  >
+                    Sent ({sentRequests.length})
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* ── HORIZONTALLY SCROLLABLE FILTER BAR ── */}
+          <div className="requests-filter-bar mb-3">
+            <div className="requests-filter-scroll">
+              {filterTabs.map((f) => {
+                const isActive = statusFilter === f.id
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setStatusFilter(f.id)}
+                    className={`requests-filter-chip ${isActive ? 'active' : ''}`}
+                  >
+                    <span>{f.label}</span>
+                    {f.count > 0 && <span className="filter-count-badge">{f.count}</span>}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {loading ? (
-            <div className="text-center py-5"><div className="spinner-border text-danger" /></div>
+            <div className="text-center py-5">
+              <div className="spinner-border text-danger" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
           ) : filteredList.length === 0 ? (
-            <div className="card border-0 shadow-sm rounded-4 text-center py-5 text-muted">
-              <i className="bi bi-images display-4 d-block mb-3 opacity-50 text-danger" />
-              <h6 className="fw-bold text-dark">No Private Photo Requests Found</h6>
-              <p className="small mb-0">
+            <div className="requests-empty-card text-center p-4 p-md-5 rounded-4 mb-3">
+              <div className="empty-icon-shield mx-auto mb-3">
+                <i className="bi bi-shield-lock-fill" />
+              </div>
+              <h5 className="fw-bold mb-2 text-dark">No Private Photo Requests Found</h5>
+              <p className="text-muted small max-w-450 mx-auto mb-4">
                 {isFemale
-                  ? 'When male members request access to your private photos, they will appear here for your approval.'
-                  : 'Visit any verified female profile and click "Request Private Photos" to request access.'}
+                  ? 'When members request permission to view your locked private album photos, their requests will appear here for your review and approval.'
+                  : "When you request access to another member's private gallery, your requests will appear here with live approval status."}
               </p>
+              <Link to="/discover" className="btn btn-wine rounded-pill px-4 py-2 fw-semibold">
+                <i className="bi bi-compass me-2" /> Discover Members
+              </Link>
             </div>
           ) : (
             <div className="row g-2 g-md-3">

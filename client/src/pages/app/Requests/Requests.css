@@ -1,5 +1,188 @@
 /* Requests.css - Connection requests page */
 
+/* ── HERO HEADER CARD ── */
+.requests-hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f8 100%);
+  border: 1px solid #ffd4da;
+  border-radius: 20px;
+  padding: 22px 24px;
+  box-shadow: 0 4px 18px rgba(118, 0, 11, 0.04);
+}
+
+.requests-hero-icon-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff0f2;
+  color: #76000b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  border: 1px solid #ffd8de;
+}
+
+.requests-hero-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.25;
+}
+
+.requests-hero-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: block;
+}
+
+.requests-hero-description {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #555555;
+  max-width: 680px;
+}
+
+/* Connect Cost Chip */
+.connect-cost-pill {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #ffccd1;
+  color: #76000b;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(118, 0, 11, 0.05);
+}
+
+.connect-cost-pill strong {
+  color: #c40000;
+}
+
+/* Summary Pills Strip */
+.requests-summary-strip {
+  border-top: 1px solid #f3e6e8;
+  padding-top: 14px;
+}
+
+.summary-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.82rem;
+  color: #495057;
+  font-weight: 500;
+}
+
+.summary-num {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.summary-pill.pending .summary-num {
+  color: #d97706;
+}
+
+.summary-pill.unlocked .summary-num {
+  color: #059669;
+}
+
+.summary-pill.awaiting .summary-num {
+  color: #0284c7;
+}
+
+/* ── HORIZONTALLY SCROLLABLE FILTER BAR ── */
+.requests-filter-bar {
+  width: 100%;
+}
+
+.requests-filter-scroll {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 6px;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+}
+
+.requests-filter-scroll::-webkit-scrollbar {
+  display: none; /* Safari & Chrome */
+}
+
+.requests-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffffff;
+  border: 1.5px solid #ebdce0;
+  color: #495057;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 7px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.requests-filter-chip:hover {
+  border-color: #76000b;
+  color: #76000b;
+  background: #fff8f9;
+}
+
+.requests-filter-chip.active {
+  background: #76000b;
+  color: #ffffff;
+  border-color: #76000b;
+  box-shadow: 0 4px 12px rgba(118, 0, 11, 0.2);
+}
+
+.filter-count-badge {
+  background: rgba(0, 0, 0, 0.08);
+  color: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+}
+
+.requests-filter-chip.active .filter-count-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+/* ── EMPTY STATE CARD ── */
+.requests-empty-card {
+  background: #ffffff;
+  border: 1px solid #ebdce0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.empty-icon-shield {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #fff0f2;
+  color: #76000b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.max-w-450 {
+  max-width: 450px;
+}
+
+/* ── CARD GRID ITEM ── */
 .conversation-card,
 .request-card {
   border-radius: 16px;
@@ -67,6 +250,41 @@
 }
 
 @media (max-width: 575.98px) {
+  .requests-hero-card {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .requests-hero-title {
+    font-size: 1.15rem;
+  }
+
+  .requests-hero-icon-badge {
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
+  }
+
+  .connect-cost-pill {
+    padding: 4px 10px;
+    font-size: 0.76rem;
+  }
+
+  .requests-hero-description {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+  }
+
+  .summary-pill {
+    padding: 3px 8px;
+    font-size: 0.76rem;
+  }
+
+  .requests-filter-chip {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+  }
+
   .request-card .card-body {
     padding: 12px 8px !important;
   }
