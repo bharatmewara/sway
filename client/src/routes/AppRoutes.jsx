@@ -39,8 +39,12 @@ import PrivacySettings from '../pages/settings/PrivacySettings/PrivacySettings'
 import NotificationSettings from '../pages/settings/NotificationSettings/NotificationSettings'
 import Subscription from '../pages/settings/Subscription/Subscription'
 
-// Public Landing & Admin
+// Public Landing, Info & Admin
 import Landing from '../pages/public/Landing/Landing'
+import About from '../pages/public/About/About'
+import FAQ from '../pages/public/FAQ/FAQ'
+import PrivacyPolicy from '../pages/public/PrivacyPolicy/PrivacyPolicy'
+import Terms from '../pages/public/Terms/Terms'
 import AdminApp from '../AdminApp'
 
 const isUserVerified = (u) =>
@@ -132,6 +136,12 @@ export default function AppRoutes() {
 
         {/* Public & Authentication */}
         <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+        <Route path="/about" element={<About />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/faqs" element={<FAQ />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<Terms />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

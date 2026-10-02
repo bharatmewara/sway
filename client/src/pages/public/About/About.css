@@ -1,0 +1,276 @@
+/* About.css - Dedicated styles for About Us page */
+
+.about-page {
+  background: #fbf9fb;
+  min-height: 100vh;
+  color: #2b2b2b;
+  overflow-x: hidden;
+}
+
+/* Hero Section */
+.about-hero {
+  background: linear-gradient(135deg, #2b0005 0%, #52000b 50%, #76000b 100%);
+  padding: 120px 0 80px;
+  position: relative;
+  color: #ffffff;
+}
+
+.about-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 20px;
+}
+
+.about-title span {
+  color: #ffb4be;
+}
+
+.about-subtitle {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #f0e4e6;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.badge-wine {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.btn-outline-custom {
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.btn-outline-custom:hover {
+  background: #ffffff;
+  color: #76000b;
+  border-color: #ffffff;
+}
+
+/* Section Common */
+.section-tag {
+  display: inline-block;
+  color: #76000b;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.section-heading {
+  font-size: 2.1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.bg-light-wine {
+  background: #f7f1f3;
+}
+
+.max-w-700 { max-width: 700px; }
+.max-w-900 { max-width: 900px; }
+.max-w-600 { max-width: 600px; }
+
+/* About Cards */
+.about-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #f0e6e8;
+  box-shadow: 0 10px 30px rgba(118, 0, 11, 0.04);
+}
+
+.highlight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.highlight-item i {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Stats Visual Grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  background: #ffffff;
+  padding: 30px 20px;
+  border-radius: 20px;
+  border: 1px solid #f0e4e6;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+}
+
+.stat-icon {
+  font-size: 32px;
+  color: #76000b;
+  margin-bottom: 12px;
+}
+
+.stat-card h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #76000b;
+  margin-bottom: 4px;
+}
+
+.stat-card p {
+  color: #666666;
+  font-size: 0.9rem;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* Feature Boxes */
+.feature-box {
+  background: #ffffff;
+  padding: 32px 24px;
+  border-radius: 18px;
+  border: 1px solid #eee4e6;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.02);
+}
+
+.feature-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(118, 0, 11, 0.08);
+  border-color: #ffd4da;
+}
+
+.feature-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #fff0f2;
+  color: #76000b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.feature-box h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin-bottom: 10px;
+}
+
+.feature-box p {
+  color: #616161;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+/* Mission Card */
+.mission-card {
+  background: linear-gradient(135deg, #59000a 0%, #76000b 100%);
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(118, 0, 11, 0.2);
+}
+
+.mission-text {
+  font-size: 1.15rem;
+  color: #f7e6e9;
+  line-height: 1.7;
+}
+
+.mission-pill {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Legal Link Cards */
+.legal-link-card {
+  background: #ffffff;
+  padding: 18px 24px;
+  border-radius: 14px;
+  border: 1.5px solid #eddfe2;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.legal-link-card:hover {
+  border-color: #76000b;
+  transform: translateX(4px);
+  box-shadow: 0 6px 18px rgba(118, 0, 11, 0.08);
+}
+
+/* About CTA */
+.about-cta {
+  background: #1c0003;
+  padding: 70px 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .about-hero {
+    padding: 100px 0 60px;
+  }
+  .about-title {
+    font-size: 2.2rem;
+  }
+  .section-heading {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-hero {
+    padding: 90px 0 50px;
+  }
+  .about-title {
+    font-size: 1.75rem;
+  }
+  .about-subtitle {
+    font-size: 1rem;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .stat-card {
+    padding: 20px;
+  }
+  .section-heading {
+    font-size: 1.5rem;
+  }
+  .feature-box {
+    padding: 24px 18px;
+  }
+}

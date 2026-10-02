@@ -554,44 +554,102 @@
 @media (max-width: 575.98px) {
   .topbar {
     padding: 0 10px;
+    overflow-x: hidden;
   }
 
   .topbar-inner {
-    min-height: 54px;
-    gap: 8px;
+    min-height: 52px;
+    gap: 6px;
   }
 
   .topbar-left {
-    gap: 10px;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
   .logo img {
-    height: 34px;
+    height: 32px;
+  }
+
+  .topbar-right {
+    gap: 6px;
   }
 
   .connect-pill {
     padding: 4px 8px;
     font-size: 11px;
     gap: 4px;
+    border-radius: 16px;
   }
 
   .icon-btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
 
   .icon-btn i {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .avatar {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .menu-toggle {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
   }
 
   .content {
     padding: 12px;
     padding-bottom: 76px;
+  }
+}
+
+/* Micro Mobile (320px - 375px) */
+@media (max-width: 375px) {
+  .topbar {
+    padding: 0 6px;
+  }
+
+  .topbar-inner {
+    gap: 4px;
+  }
+
+  .topbar-left {
+    gap: 6px;
+  }
+
+  .logo img {
+    height: 28px;
+    max-width: 75px;
+  }
+
+  .topbar-right {
+    gap: 4px;
+  }
+
+  .connect-pill {
+    padding: 3px 6px;
+    font-size: 10.5px;
+  }
+
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .menu-toggle {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
   }
 }
 

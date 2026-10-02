@@ -1,0 +1,6 @@
+/* Terms.css - Additional styles specific to Terms & Conditions */
+
+/* Inherits primary structure from PrivacyPolicy.css */
+.legal-paper strong {
+  color: #1a1a1a;
+}

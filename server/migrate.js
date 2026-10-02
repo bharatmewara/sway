@@ -97,6 +97,11 @@ CREATE TABLE IF NOT EXISTS users (
   preferred_age_max INTEGER DEFAULT 60,
   preferred_distance INTEGER DEFAULT 50,
   blur_face_photo BOOLEAN DEFAULT FALSE,
+  terms_accepted BOOLEAN DEFAULT FALSE,
+  privacy_policy_accepted BOOLEAN DEFAULT FALSE,
+  terms_version VARCHAR(20) DEFAULT '1.0',
+  privacy_policy_version VARCHAR(20) DEFAULT '1.0',
+  consent_accepted_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -107,6 +112,9 @@ CREATE TABLE IF NOT EXISTS user_privacy_settings (
   hide_real_name BOOLEAN DEFAULT FALSE,
   hide_phone BOOLEAN DEFAULT TRUE,
   hide_email BOOLEAN DEFAULT TRUE,
+  hide_instagram BOOLEAN DEFAULT FALSE,
+  hide_facebook BOOLEAN DEFAULT FALSE,
+  hide_telegram BOOLEAN DEFAULT FALSE,
   blur_face BOOLEAN DEFAULT FALSE,
   hide_distance BOOLEAN DEFAULT FALSE,
   hide_age BOOLEAN DEFAULT FALSE,
@@ -188,9 +196,16 @@ CREATE TABLE IF NOT EXISTS verification_requests (
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   verification_type VARCHAR(30) DEFAULT 'facial',
   selfie_photo TEXT,
+  selfie_bytes BYTEA,
+  selfie_mime VARCHAR(50),
   document_photo TEXT,
   document_type VARCHAR(50),
+  selected_gender VARCHAR(20),
   ai_gender_detected VARCHAR(20),
+  gender_match_status VARCHAR(30) DEFAULT 'PENDING',
+  capture_source VARCHAR(50) DEFAULT 'live_camera',
+  face_count INTEGER DEFAULT 1,
+  failure_reason TEXT,
   ai_confidence_score DECIMAL(5,4),
   ai_face_match_score DECIMAL(5,4),
   ai_liveness_score DECIMAL(5,4),
@@ -216,8 +231,10 @@ CREATE TABLE IF NOT EXISTS matches (
   id SERIAL PRIMARY KEY,
   user1_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   user2_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  match_type VARCHAR(30) DEFAULT 'mutual_like',
   compatibility_score DECIMAL(5,2) DEFAULT 0,
   matched_at TIMESTAMP DEFAULT NOW(),
+  created_at TIMESTAMP DEFAULT NOW(),
   is_active BOOLEAN DEFAULT TRUE,
   UNIQUE(user1_id, user2_id)
 );
@@ -244,11 +261,15 @@ CREATE TABLE IF NOT EXISTS connection_requests (
   id SERIAL PRIMARY KEY,
   sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  request_type VARCHAR(50) DEFAULT 'chat',
   status VARCHAR(20) DEFAULT 'pending',
   message TEXT,
   credits_charged INTEGER DEFAULT 0,
+  connects_charged INTEGER DEFAULT 0,
   responded_at TIMESTAMP,
+  granted_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
   UNIQUE(sender_id, receiver_id)
 );
 
@@ -403,8 +424,17 @@ CREATE TABLE IF NOT EXISTS transactions (
   credits_purchased INTEGER,
   amount_inr DECIMAL(10,2),
   amount_paise INTEGER,
+  currency VARCHAR(10) DEFAULT 'INR',
+  gateway VARCHAR(50) DEFAULT 'razorpay',
   status VARCHAR(20) DEFAULT 'pending',
   payment_method VARCHAR(50),
+  failure_reason TEXT,
+  refund_status VARCHAR(50),
+  refund_amount_inr DECIMAL(10,2),
+  refund_reason TEXT,
+  refunded_by INTEGER REFERENCES users(id),
+  refunded_at TIMESTAMP,
+  connects_reversed BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT NOW(),
   completed_at TIMESTAMP
 );
@@ -438,9 +468,14 @@ CREATE TABLE IF NOT EXISTS reports (
   reported_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   reason VARCHAR(100) NOT NULL,
   description TEXT,
+  priority VARCHAR(20) DEFAULT 'medium',
   status VARCHAR(20) DEFAULT 'open',
+  resolution_action VARCHAR(50),
+  admin_notes TEXT,
   reviewed_by INTEGER REFERENCES users(id),
-  created_at TIMESTAMP DEFAULT NOW()
+  resolved_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS blocks (
@@ -572,13 +607,64 @@ CREATE TABLE IF NOT EXISTS admin_audit_logs (
   user_agent TEXT,
   created_at TIMESTAMP DEFAULT NOW()
 );
+const ALTER_SQL = `
+-- Safely add missing columns to existing tables
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_bytes BYTEA;
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_mime VARCHAR(50);
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selected_gender VARCHAR(20);
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS gender_match_status VARCHAR(30) DEFAULT 'PENDING';
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS capture_source VARCHAR(50) DEFAULT 'live_camera';
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS face_count INTEGER DEFAULT 1;
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS failure_reason TEXT;
+
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'medium';
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS resolution_action VARCHAR(50);
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS admin_notes TEXT;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP;
+ALTER TABLE reports ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'INR';
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS gateway VARCHAR(50) DEFAULT 'razorpay';
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS failure_reason TEXT;
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refund_status VARCHAR(50);
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refund_amount_inr DECIMAL(10,2);
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refund_reason TEXT;
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refunded_by INTEGER REFERENCES users(id);
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS refunded_at TIMESTAMP;
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS connects_reversed BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE user_privacy_settings ADD COLUMN IF NOT EXISTS hide_instagram BOOLEAN DEFAULT FALSE;
+ALTER TABLE user_privacy_settings ADD COLUMN IF NOT EXISTS hide_facebook BOOLEAN DEFAULT FALSE;
+ALTER TABLE user_privacy_settings ADD COLUMN IF NOT EXISTS hide_telegram BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_type VARCHAR(30) DEFAULT 'mutual_like';
+ALTER TABLE matches ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE connection_requests ADD COLUMN IF NOT EXISTS request_type VARCHAR(50) DEFAULT 'chat';
+ALTER TABLE connection_requests ADD COLUMN IF NOT EXISTS connects_charged INTEGER DEFAULT 0;
+ALTER TABLE connection_requests ADD COLUMN IF NOT EXISTS granted_at TIMESTAMP;
+ALTER TABLE connection_requests ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT NOW();
+
+ALTER TABLE connect_transactions ADD COLUMN IF NOT EXISTS related_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE connect_transactions ADD COLUMN IF NOT EXISTS related_conversation_id INTEGER REFERENCES conversations(id) ON DELETE SET NULL;
+ALTER TABLE connect_transactions ADD COLUMN IF NOT EXISTS payment_reference VARCHAR(255);
+ALTER TABLE connect_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEFAULT 'COMPLETED';
+
+ALTER TABLE notifications ADD COLUMN IF NOT EXISTS related_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_policy_accepted BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_version VARCHAR(20) DEFAULT '1.0';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_policy_version VARCHAR(20) DEFAULT '1.0';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS consent_accepted_at TIMESTAMP;
 `;
 
 (async () => {
   try {
     console.log('[1/4] Running schema migration...');
     await pool.query(SCHEMA_SQL);
-    console.log('[2/4] Schema created successfully.');
+    await pool.query(ALTER_SQL);
+    console.log('[2/4] Schema and column updates applied successfully.');
 
     // Seed default admin_communication_settings if empty
     const commCheck = await pool.query('SELECT COUNT(*)::int AS cnt FROM admin_communication_settings');

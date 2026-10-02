@@ -68,12 +68,22 @@ class AuthService {
     const age = this.calcAge(dob);
     if (age < 18) throw new Error('You must be at least 18 years old.');
 
+    // Server-side legal consent validation
+    const termsAccepted = data.terms_accepted === true || data.terms_accepted === 'true';
+    if (!termsAccepted) {
+      throw new Error('Please accept the Terms & Conditions and Privacy Policy to continue.');
+    }
+
     const exists = await userRepo.exists(email, username);
     if (exists) throw new Error('Email or username already in use.');
 
     const passwordHash = await hash(password);
     const user = await userRepo.create({
-      username, email, passwordHash, gender, dob, age, city, state, country
+      username, email, passwordHash, gender, dob, age, city, state, country,
+      terms_accepted: true,
+      privacy_policy_accepted: true,
+      terms_version: data.terms_version || '1.0',
+      privacy_policy_version: data.privacy_policy_version || '1.0',
     });
 
     const token = sign({ id: user.id, role: user.role, gender: user.gender, username: user.username });

@@ -27,7 +27,11 @@ class UserRepository {
   async create(userData) {
     const {
       username, email, passwordHash, gender, dob, age,
-      city, state, country, role = 'user'
+      city, state, country, role = 'user',
+      terms_accepted = true,
+      privacy_policy_accepted = true,
+      terms_version = '1.0',
+      privacy_policy_version = '1.0',
     } = userData;
     const selectedGender = String(gender || '').toLowerCase().trim();
 
@@ -37,9 +41,14 @@ class UserRepository {
         city, state, country, role, connect_credits, is_online,
         verification_status, gender_match_status, profile_status,
         onboarding_status, profile_completed,
-        connect_required_for_chat, verified_at
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, 0, false, 'NOT_VERIFIED', 'PENDING', 'INCOMPLETE', 'NOT_VERIFIED', false, true, NULL) RETURNING *`,
-      [username, email, passwordHash, selectedGender, selectedGender, dob, age, city, state, country, role]
+        connect_required_for_chat, verified_at,
+        terms_accepted, privacy_policy_accepted, terms_version, privacy_policy_version, consent_accepted_at
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11, 0, false, 'NOT_VERIFIED', 'PENDING', 'INCOMPLETE', 'NOT_VERIFIED', false, true, NULL, $12, $13, $14, $15, NOW()) RETURNING *`,
+      [
+        username, email, passwordHash, selectedGender, selectedGender, dob, age,
+        city, state, country, role,
+        terms_accepted, privacy_policy_accepted, terms_version, privacy_policy_version
+      ]
     );
     return res.rows[0];
   }

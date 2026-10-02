@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Input from '../common/Input'
 import Button from '../common/Button'
 
@@ -13,6 +14,8 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
     state: 'Maharashtra',
     country: 'India'
   })
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [consentError, setConsentError] = useState('')
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -27,6 +30,10 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
     if (!['female', 'male'].includes(formData.gender)) {
       return
     }
+    if (!termsAccepted) {
+      setConsentError('Please accept the Terms & Conditions and Privacy Policy to continue.')
+      return
+    }
     try {
       sessionStorage.setItem('sway_selected_gender', formData.gender)
     } catch {
@@ -35,6 +42,10 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
     onSubmit({
       ...formData,
       selected_gender: formData.gender,
+      terms_accepted: true,
+      privacy_policy_accepted: true,
+      terms_version: '1.0',
+      privacy_policy_version: '1.0',
     })
   }
 
@@ -190,6 +201,44 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
             required
           />
         </div>
+      </div>
+
+      {/* Legal Consent Checkbox */}
+      <div className="mt-3 text-start">
+        <div className="form-check d-flex align-items-start gap-2">
+          <input
+            className="form-check-input mt-1"
+            type="checkbox"
+            id="termsConsent"
+            checked={termsAccepted}
+            onChange={(e) => {
+              setTermsAccepted(e.target.checked)
+              if (e.target.checked) setConsentError('')
+            }}
+            style={{
+              cursor: 'pointer',
+              borderColor: consentError ? '#dc3545' : '#76000b',
+              minWidth: '18px',
+              minHeight: '18px',
+            }}
+          />
+          <label className="form-check-label small text-muted" htmlFor="termsConsent" style={{ cursor: 'pointer', lineHeight: 1.45, fontSize: '12.5px' }}>
+            I agree to the{' '}
+            <Link to="/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="fw-semibold text-decoration-none" style={{ color: '#76000b' }}>
+              Terms &amp; Conditions
+            </Link>{' '}
+            and acknowledge the{' '}
+            <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" className="fw-semibold text-decoration-none" style={{ color: '#76000b' }}>
+              Privacy Policy
+            </Link>.
+          </label>
+        </div>
+        {consentError && (
+          <div className="text-danger small mt-1 ps-4" style={{ fontSize: '11.5px' }}>
+            <i className="bi bi-exclamation-circle me-1" />
+            {consentError}
+          </div>
+        )}
       </div>
 
       <Button type="submit" variant="wine" loading={loading} className="w-100 py-2 mt-3">

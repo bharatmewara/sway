@@ -126,17 +126,18 @@ export default function DashboardLayout({ children }) {
             {isFemale ? (
               <span className="connect-pill" title="Verified profile — Free Chat & Private Messages">
                 <i className="bi bi-gift-fill text-danger" />
-                <span>Free Chat</span>
+                <span className="d-none d-sm-inline">Free Chat</span>
+                <span className="d-inline d-sm-none">Free</span>
               </span>
             ) : (
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex align-items-center gap-1 gap-sm-2">
                 <Link
                   to={`/purchase-connect?returnTo=${encodeURIComponent(location.pathname + location.search)}`}
                   className="connect-pill"
                   title="Your Connect Balance"
                 >
                   <i className="bi bi-lightning-charge-fill text-danger" />
-                  <span>Connects:</span>
+                  <span className="d-none d-sm-inline">Connects:</span>
                   <span className="credit-num">{user?.connect_credits ?? 0}</span>
                 </Link>
                 <Link
@@ -156,7 +157,7 @@ export default function DashboardLayout({ children }) {
               )}
             </Link>
 
-            <Link to="/private-chats" className="icon-btn" title="Private Messages" aria-label="Private Messages">
+            <Link to="/private-chats" className="icon-btn d-none d-sm-flex" title="Private Messages" aria-label="Private Messages">
               <i className="bi bi-chat" />
               {counts?.messages > 0 && (
                 <span className="notify">{counts.messages > 99 ? '99+' : counts.messages}</span>
