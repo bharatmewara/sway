@@ -5,6 +5,14 @@
   "scripts": {
     "install:all": "npm install && npm --prefix server install && npm --prefix client install",
     "db:migrate": "npm run migrate --prefix server",
+    "seed:fake-jaipur": "node scripts/manage_fake_users.js --create",
+    "delete:fake-jaipur": "node scripts/manage_fake_users.js --delete",
+    "list:fake-jaipur": "node scripts/manage_fake_users.js --list",
+    "update:marital-status": "node scripts/update_marital_status.js",
+    "update:extramarital": "node scripts/update_extramarital_profiles.js",
+    "seed:all-profiles": "node scripts/seed_all_fake_users.js",
+    "delete:all-profiles": "node scripts/seed_all_fake_users.js --delete",
+    "list:all-profiles": "node scripts/seed_all_fake_users.js --list",
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
     "start": "concurrently \"npm start --prefix server\" \"npm run preview --prefix client\""
   },

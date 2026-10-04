@@ -7,6 +7,9 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
     "migrate": "node migrate.js",
+    "seed:fake-jaipur": "node ../scripts/manage_fake_users.js --create",
+    "delete:fake-jaipur": "node ../scripts/manage_fake_users.js --delete",
+    "list:fake-jaipur": "node ../scripts/manage_fake_users.js --list",
     "test": "jest --runInBand"
   },
   "keywords": [],

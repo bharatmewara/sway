@@ -69,7 +69,7 @@ export default function Members() {
                           />
                         </div>
                         <h5 className="fw-bold mb-1 d-flex align-items-center gap-1 gap-md-2 text-truncate">
-                          <span className="text-truncate">{m.username}</span>
+                          <span className="text-truncate">{m.nickname}</span>
                           {m.is_online && <span className="bg-success rounded-circle flex-shrink-0" style={{ width: 8, height: 8, display: 'inline-block' }} />}
                         </h5>
                         <p className="text-muted small mb-2">{timeAgo(m.last_seen, m.is_online)}</p>
