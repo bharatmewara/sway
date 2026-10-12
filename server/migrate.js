@@ -200,6 +200,8 @@ CREATE TABLE IF NOT EXISTS verification_requests (
   selfie_mime VARCHAR(50),
   document_photo TEXT,
   document_type VARCHAR(50),
+  document_bytes BYTEA,
+  document_mime VARCHAR(50),
   selected_gender VARCHAR(20),
   ai_gender_detected VARCHAR(20),
   gender_match_status VARCHAR(30) DEFAULT 'PENDING',
@@ -610,8 +612,13 @@ CREATE TABLE IF NOT EXISTS admin_audit_logs (
 `;
 
 const ALTER_SQL = `
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_photo TEXT;
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_bytes BYTEA;
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selfie_mime VARCHAR(50);
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS document_photo TEXT;
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS document_type VARCHAR(50);
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS document_bytes BYTEA;
+ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS document_mime VARCHAR(50);
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS selected_gender VARCHAR(20);
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS gender_match_status VARCHAR(30) DEFAULT 'PENDING';
 ALTER TABLE verification_requests ADD COLUMN IF NOT EXISTS capture_source VARCHAR(50) DEFAULT 'live_camera';
@@ -653,6 +660,8 @@ ALTER TABLE connect_transactions ADD COLUMN IF NOT EXISTS status VARCHAR(30) DEF
 
 ALTER TABLE notifications ADD COLUMN IF NOT EXISTS related_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_bytes BYTEA;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS photo_mime VARCHAR(50);
 ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_accepted BOOLEAN DEFAULT FALSE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_policy_accepted BOOLEAN DEFAULT FALSE;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS terms_version VARCHAR(20) DEFAULT '1.0';
@@ -661,8 +670,35 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS consent_accepted_at TIMESTAMP;
 `;
 
 const PRIVACY_CLEANUP_SQL = `
-UPDATE users SET profile_photo = NULL, photo_bytes = NULL, photo_mime = NULL WHERE profile_photo LIKE 'data:%';
-UPDATE verification_requests SET selfie_photo = NULL, selfie_bytes = NULL, selfie_mime = NULL, document_photo = NULL, document_bytes = NULL, document_mime = NULL;
+DO $$
+BEGIN
+  -- Clear legacy base64 data URLs from users if profile_photo exists
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'users' AND column_name = 'profile_photo') THEN
+    UPDATE users SET profile_photo = NULL WHERE profile_photo LIKE 'data:%';
+  END IF;
+
+  -- Clear verification photos safely only if columns exist
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'verification_requests') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'selfie_photo') THEN
+      UPDATE verification_requests SET selfie_photo = NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'selfie_bytes') THEN
+      UPDATE verification_requests SET selfie_bytes = NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'selfie_mime') THEN
+      UPDATE verification_requests SET selfie_mime = NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'document_photo') THEN
+      UPDATE verification_requests SET document_photo = NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'document_bytes') THEN
+      UPDATE verification_requests SET document_bytes = NULL;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'verification_requests' AND column_name = 'document_mime') THEN
+      UPDATE verification_requests SET document_mime = NULL;
+    END IF;
+  END IF;
+END $$;
 `;
 
 (async () => {
@@ -670,7 +706,11 @@ UPDATE verification_requests SET selfie_photo = NULL, selfie_bytes = NULL, selfi
     console.log('[1/4] Running schema migration...');
     await pool.query(SCHEMA_SQL);
     await pool.query(ALTER_SQL);
-    await pool.query(PRIVACY_CLEANUP_SQL);
+    try {
+      await pool.query(PRIVACY_CLEANUP_SQL);
+    } catch (cleanupErr) {
+      console.warn('[WARN] Privacy cleanup notice:', cleanupErr.message);
+    }
     console.log('[2/4] Schema, column updates, and privacy protections applied successfully.');
 
     // Seed default admin_communication_settings if empty
