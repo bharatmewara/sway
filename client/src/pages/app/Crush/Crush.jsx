@@ -3,14 +3,8 @@ import { Link } from 'react-router-dom';
 import DashboardLayout from '../../../components/DashboardLayout';
 import RightBar from '../../../components/RightBar';
 import api from '../../../api/axios';
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 import './Crush.css';
-
-const getFallback = (gender) => gender === 'female' ? '/img/girl.png' : '/img/boy.png';
-
-const getAvatar = (photo, gender) => {
-  if (!photo) return getFallback(gender);
-  return photo.startsWith('http') || photo.startsWith('/') || photo.startsWith('data:') ? photo : `/${photo}`;
-};
 
 export default function Crush() {
   const [crushes, setCrushes] = useState([]);
@@ -85,8 +79,8 @@ export default function Crush() {
                     <Link to={`/view-profile/${c.sender_id}`} className="card-body p-3 p-md-4 text-center text-decoration-none">
                       <div>
                         <img
-                          src={getAvatar(c.profile_photo, c.gender)}
-                          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(c.gender); }}
+                          src={resolveAvatarUrl(c.profile_photo, c.gender)}
+                          onError={(e) => handleAvatarError(e, c.gender)}
                           className="profile-img-private-chat"
                           style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: '50%' }}
                           alt={c.username}

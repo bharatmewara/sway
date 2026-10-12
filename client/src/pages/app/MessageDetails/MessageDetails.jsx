@@ -6,13 +6,8 @@ import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import useSocket from '../../../hooks/useSocket';
 import toast from 'react-hot-toast';
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 import './MessageDetails.css';
-
-const getFallback = (gender) => (gender === 'female' ? '/img/girl.png' : '/img/profile.jpg');
-const getPhoto = (p, gender) => {
-  if (!p) return getFallback(gender);
-  return p.startsWith('http') || p.startsWith('/') || p.startsWith('data:') ? p : `/${p}`;
-};
 
 const formatTime = (iso) => {
   if (!iso) return '';
@@ -437,11 +432,8 @@ export default function MessageDetails() {
                 <div className="mb-3">
                   <Link to={`/view-profile/${userId}`} className="position-relative d-inline-block text-decoration-none">
                     <img
-                      src={getPhoto(profile?.profile_photo, profile?.gender)}
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = getFallback(profile?.gender);
-                      }}
+                      src={resolveAvatarUrl(profile?.profile_photo, profile?.gender)}
+                      onError={(e) => handleAvatarError(e, profile?.gender)}
                       className="profile-avatar"
                       alt={profile?.username || 'Member'}
                     />

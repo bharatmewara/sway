@@ -4,6 +4,7 @@ import useSocket from '../hooks/useSocket';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import { resolveAvatarUrl, handleAvatarError } from '../utils/avatar';
 
 export default function ChatPopup({ userId, onClose }) {
   const { user, updateUser, showInsufficientConnects } = useAuth();
@@ -133,7 +134,8 @@ export default function ChatPopup({ userId, onClose }) {
       >
         <div className="position-relative me-2">
           <img 
-            src={otherUser?.profile_photo || (otherUser?.gender === 'female' ? '/img/girl.png' : '/img/boy.png')} 
+            src={resolveAvatarUrl(otherUser?.profile_photo, otherUser?.gender)} 
+            onError={(e) => handleAvatarError(e, otherUser?.gender)}
             alt="Avatar" 
             style={{ width: 35, height: 35, borderRadius: '50%', objectFit: 'cover' }}
           />

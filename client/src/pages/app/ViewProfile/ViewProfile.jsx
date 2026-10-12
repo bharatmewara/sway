@@ -5,10 +5,8 @@ import RightBar from '../../../components/RightBar'
 import { useAuth } from '../../../context/AuthContext'
 import api from '../../../api/axios'
 import toast from 'react-hot-toast'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './ViewProfile.css'
-
-const getFallback = (g) => g === 'female' ? '/img/girl.png' : '/img/boy.png'
-const getPhoto = (p, g) => p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : p ? `/${p}` : getFallback(g)
 
 const parseArr = (v) => {
   if (!v) return []
@@ -349,8 +347,8 @@ export default function ViewProfile() {
                 <div className="text-center mb-4">
                   <div className="position-relative d-inline-block">
                     <img
-                      src={getPhoto(profile.profile_photo, profile.gender)}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(profile?.gender); }}
+                      src={resolveAvatarUrl(profile.profile_photo, profile.gender)}
+                      onError={(e) => handleAvatarError(e, profile?.gender)}
                       className="profile-avatar"
                       alt={profile.username}
                     />
@@ -547,10 +545,11 @@ export default function ViewProfile() {
                           <div
                             className="position-relative rounded-3 overflow-hidden border shadow-sm"
                             style={{ aspectRatio: '1/1', cursor: 'pointer' }}
-                            onClick={() => setSelectedPrivatePhoto(getPhoto(p.photo_url, profile.gender))}
+                            onClick={() => setSelectedPrivatePhoto(resolveAvatarUrl(p.photo_url, profile.gender))}
                           >
                             <img
-                              src={getPhoto(p.photo_url, profile.gender)}
+                              src={resolveAvatarUrl(p.photo_url, profile.gender)}
+                              onError={(e) => handleAvatarError(e, profile.gender)}
                               alt="Private"
                               className="w-100 h-100"
                               style={{ objectFit: 'cover' }}

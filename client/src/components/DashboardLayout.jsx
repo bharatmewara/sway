@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { resolveAvatarUrl, handleAvatarError } from '../utils/avatar';
 import ChatPopup from './ChatPopup';
 import InsufficientConnectsModal from './InsufficientConnectsModal';
 import './DashboardLayout.css';
@@ -16,7 +17,8 @@ export default function DashboardLayout({ children }) {
     navigate('/');
   };
 
-  const isFemale = (user?.verified_gender || user?.gender) === 'female' || user?.connect_required_for_chat === false;
+  const verifiedGender = (user?.verified_gender || user?.gender || 'male').toLowerCase();
+  const isFemale = verifiedGender === 'female' || user?.connect_required_for_chat === false;
 
   const navItems = [
     { path: '/home',          icon: 'bi-house',         label: 'Home' },
@@ -55,15 +57,7 @@ export default function DashboardLayout({ children }) {
     setDropdownOpen(false);
   }, [location.pathname]);
 
-  const defaultAvatar = user?.gender === 'female' ? '/img/girl.png' : '/img/profile-man.png';
-  const avatarSrc = user?.profile_photo
-    ? (user.profile_photo.startsWith('http') || user.profile_photo.startsWith('/') || user.profile_photo.startsWith('data:') ? user.profile_photo : `/${user.profile_photo}`)
-    : defaultAvatar;
-
-  const handleImgError = (e) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = defaultAvatar;
-  };
+  const avatarSrc = resolveAvatarUrl(user?.profile_photo, verifiedGender);
 
   return (
     <div className="main">
@@ -177,7 +171,7 @@ export default function DashboardLayout({ children }) {
                 <div className="avatar">
                   <img
                     src={avatarSrc}
-                    onError={handleImgError}
+                    onError={(e) => handleAvatarError(e, verifiedGender)}
                     alt={user?.username || 'user'}
                   />
                 </div>
@@ -340,7 +334,7 @@ export default function DashboardLayout({ children }) {
         })}
         <Link to="/profile" className={`mobile-nav-item ${location.pathname === '/profile' ? 'active' : ''}`}>
           <div className="mobile-avatar">
-            <img src={avatarSrc} onError={handleImgError} alt="" />
+            <img src={avatarSrc} onError={(e) => handleAvatarError(e, verifiedGender)} alt="" />
           </div>
           <span className="mobile-nav-label">Me</span>
         </Link>

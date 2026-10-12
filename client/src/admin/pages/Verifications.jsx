@@ -158,18 +158,11 @@ export default function Verifications() {
 
                 <div className="row g-3 align-items-center">
                   <div className="col-sm-5">
-                    {r.selfie_url ? (
-                      <img
-                        src={resolveSelfieUrl(r.selfie_url)}
-                        className="w-100 rounded-3 border"
-                        alt="Live Selfie"
-                        style={{ height: 180, objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div className="bg-light rounded-3 d-flex align-items-center justify-content-center" style={{ height: 180 }}>
-                        <span className="text-muted small">No Image</span>
-                      </div>
-                    )}
+                    <div className="bg-light rounded-3 d-flex flex-column align-items-center justify-content-center p-3 text-center border h-100" style={{ minHeight: 160 }}>
+                      <i className="bi bi-shield-check text-success display-6 mb-2" />
+                      <div className="fw-semibold text-dark small">Live Camera AI Verification</div>
+                      <div className="text-muted" style={{ fontSize: 11 }}>Biometric selfie not stored (Zero Retention)</div>
+                    </div>
                   </div>
                   <div className="col-sm-7">
                     <div className="p-3 bg-light rounded-3 mb-2" style={{ fontSize: 13 }}>

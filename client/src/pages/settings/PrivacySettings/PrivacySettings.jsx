@@ -5,12 +5,7 @@ import RightBar from '../../../components/RightBar';
 import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import toast from 'react-hot-toast';
-
-const getFallback = (gender) => (gender === 'female' ? '/img/girl.png' : '/img/boy.png');
-const getPhoto = (p, gender) => {
-  if (!p) return getFallback(gender);
-  return p.startsWith('http') || p.startsWith('/') || p.startsWith('data:') ? p : `/${p}`;
-};
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 
 export default function PrivacySettings() {
   const { user, updateUser } = useAuth();
@@ -342,11 +337,8 @@ export default function PrivacySettings() {
                                   className="d-flex align-items-center gap-2 text-decoration-none text-dark fw-semibold"
                                 >
                                   <img
-                                    src={getPhoto(perm.profile_photo, 'male')}
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = getFallback('male');
-                                    }}
+                                    src={resolveAvatarUrl(perm.profile_photo, 'male')}
+                                    onError={(e) => handleAvatarError(e, 'male')}
                                     alt={perm.username}
                                     style={{ width: 38, height: 38, borderRadius: '50%', objectFit: 'cover' }}
                                   />
@@ -426,11 +418,8 @@ export default function PrivacySettings() {
                       >
                         <div className="d-flex align-items-center gap-2">
                           <img
-                            src={getPhoto(b.profile_photo, b.gender)}
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = getFallback(b.gender);
-                            }}
+                            src={resolveAvatarUrl(b.profile_photo, b.gender)}
+                            onError={(e) => handleAvatarError(e, b.gender)}
                             alt={b.username}
                             style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover' }}
                           />

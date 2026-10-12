@@ -18,10 +18,42 @@ const register = [
     return true;
   }),
   body().custom((_, { req }) => {
-    const dob = req.body.dob || req.body.date_of_birth;
-    if (!dob || isNaN(Date.parse(dob))) {
-      throw new Error('Date of birth must be YYYY-MM-DD.');
+    const rawDob = req.body.dob || req.body.date_of_birth;
+    if (!rawDob || typeof rawDob !== 'string') {
+      throw new Error('Date of birth is required.');
     }
+    const dob = rawDob.trim();
+    const match = dob.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) {
+      throw new Error('Date of birth must be in YYYY-MM-DD format.');
+    }
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const day = parseInt(match[3], 10);
+    const dateObj = new Date(year, month - 1, day);
+    if (
+      dateObj.getFullYear() !== year ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getDate() !== day
+    ) {
+      throw new Error('Invalid calendar date provided for date of birth.');
+    }
+    const today = new Date();
+    if (dateObj > today) {
+      throw new Error('Date of birth cannot be in the future.');
+    }
+    let age = today.getFullYear() - year;
+    const m = today.getMonth() - (month - 1);
+    if (m < 0 || (m === 0 && today.getDate() < day)) age--;
+    if (age < 18) {
+      throw new Error('You must be at least 18 years old to join Sway.');
+    }
+    if (age > 120) {
+      throw new Error('Please enter a valid date of birth.');
+    }
+    req.body.dob = dob;
+    req.body.date_of_birth = dob;
+    req.body.age = age;
     return true;
   }),
   body('city').trim().notEmpty().withMessage('City is required.'),

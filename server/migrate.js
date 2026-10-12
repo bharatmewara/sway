@@ -660,12 +660,18 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS privacy_policy_version VARCHAR(20) DE
 ALTER TABLE users ADD COLUMN IF NOT EXISTS consent_accepted_at TIMESTAMP;
 `;
 
+const PRIVACY_CLEANUP_SQL = `
+UPDATE users SET profile_photo = NULL, photo_bytes = NULL, photo_mime = NULL WHERE profile_photo LIKE 'data:%';
+UPDATE verification_requests SET selfie_photo = NULL, selfie_bytes = NULL, selfie_mime = NULL, document_photo = NULL, document_bytes = NULL, document_mime = NULL;
+`;
+
 (async () => {
   try {
     console.log('[1/4] Running schema migration...');
     await pool.query(SCHEMA_SQL);
     await pool.query(ALTER_SQL);
-    console.log('[2/4] Schema and column updates applied successfully.');
+    await pool.query(PRIVACY_CLEANUP_SQL);
+    console.log('[2/4] Schema, column updates, and privacy protections applied successfully.');
 
     // Seed default admin_communication_settings if empty
     const commCheck = await pool.query('SELECT COUNT(*)::int AS cnt FROM admin_communication_settings');

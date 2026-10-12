@@ -25,10 +25,11 @@ export default function ChatList({ conversations = [], activeId, onSelect }) {
             }`}
           >
             <Avatar
-              src={conv.profile_photo}
-              alt={conv.username}
+              src={conv.profile_photo || conv.other_photo}
+              alt={conv.username || conv.other_username}
               size={48}
-              isOnline={conv.is_online}
+              gender={conv.gender || conv.other_gender}
+              isOnline={conv.is_online || conv.other_is_online}
             />
             <div className="flex-grow-1 text-start overflow-hidden">
               <div className="d-flex justify-content-between align-items-center mb-1">

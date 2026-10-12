@@ -47,13 +47,29 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(rateLimits.general);
 
-// ── Static Files ──────────────────────────────────────────────────────────────
+// ── Static Files (Public Assets Only) ─────────────────────────────────────────
+const fs = require('fs');
 const uploadsDir = path.join(__dirname, '../../uploads');
-app.use('/uploads', express.static(uploadsDir));
-app.use('/uploads', express.static(path.join(uploadsDir, 'profiles')));
-app.use('/uploads', express.static(path.join(uploadsDir, 'private')));
-app.use('/uploads', express.static(path.join(uploadsDir, 'verification')));
-app.use('/uploads', express.static(path.join(uploadsDir, 'stories')));
+const profilesDir = path.join(uploadsDir, 'profiles');
+const storiesDir = path.join(uploadsDir, 'stories');
+
+// Only explicitly public asset directories are mounted statically.
+// Verification images are strictly non-static and not stored.
+// Private photos are served exclusively through authenticated endpoints (/api/profile/raw/:photoId).
+if (!fs.existsSync(profilesDir)) fs.mkdirSync(profilesDir, { recursive: true });
+if (!fs.existsSync(storiesDir)) fs.mkdirSync(storiesDir, { recursive: true });
+app.use('/uploads/profiles', express.static(profilesDir));
+app.use('/uploads/stories', express.static(storiesDir));
+
+// Fallback static serving for /img from client
+const clientPublicImg = path.join(__dirname, '../../client/public/img');
+const clientDistImg   = path.join(__dirname, '../../client/dist/img');
+if (fs.existsSync(clientPublicImg)) {
+  app.use('/img', express.static(clientPublicImg));
+}
+if (fs.existsSync(clientDistImg)) {
+  app.use('/img', express.static(clientDistImg));
+}
 
 // ── Health Check ──────────────────────────────────────────────────────────────
 const pool = require('./config/database');

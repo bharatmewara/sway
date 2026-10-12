@@ -5,10 +5,9 @@ import RightBar from '../../../components/RightBar'
 import { useAuth } from '../../../context/AuthContext'
 import api from '../../../api/axios'
 import toast from 'react-hot-toast'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './Requests.css'
 
-const getFallback = (g) => g === 'female' ? '/img/girl.png' : '/img/boy.png'
-const getPhoto = (p, g) => p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : p ? `/${p}` : getFallback(g)
 const fmt = (iso) => iso ? new Date(iso).toLocaleDateString() + ' ' + new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''
 
 export default function Requests() {
@@ -335,8 +334,8 @@ export default function Requests() {
                         <div>
                           <div className="position-relative d-inline-block">
                             <img
-                              src={getPhoto(r.profile_photo, r.gender)}
-                              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(r.gender); }}
+                              src={resolveAvatarUrl(r.profile_photo, r.gender)}
+                              onError={(e) => handleAvatarError(e, r.gender)}
                               className="profile-img-private-chat"
                               alt={r.username}
                             />

@@ -6,13 +6,8 @@ import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import useSocket from '../../../hooks/useSocket';
 import toast from 'react-hot-toast';
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 import './PrivateChats.css';
-
-const getFallback = (gender) => (gender === 'female' ? '/img/girl.png' : '/img/profile.jpg');
-const getPhoto = (p, gender) => {
-  if (!p) return getFallback(gender);
-  return p.startsWith('http') || p.startsWith('/') || p.startsWith('data:') ? p : `/${p}`;
-};
 
 const timeAgo = (dateStr, isOnline) => {
   if (isOnline) return 'Online now';
@@ -317,7 +312,7 @@ export default function PrivateChats() {
               {filteredConversations.map((c) => {
                 const isOnline = c.other_is_online ?? c.is_online;
                 const otherName = c.other_username || c.username || 'Member';
-                const photo = getPhoto(c.other_photo || c.profile_photo, c.other_gender);
+                const photo = resolveAvatarUrl(c.other_photo || c.profile_photo, c.other_gender);
                 const isMe = c.last_sender_id === user?.id;
                 const isExpired = c.session_status === 'EXPIRED';
                 const isLocked = !isFemale && (c.is_locked || c.is_blurred);
@@ -342,10 +337,7 @@ export default function PrivateChats() {
                         <div className="mb-2">
                           <img
                             src={photo}
-                            onError={(e) => {
-                              e.currentTarget.onerror = null;
-                              e.currentTarget.src = getFallback(c.other_gender);
-                            }}
+                            onError={(e) => handleAvatarError(e, c.other_gender)}
                             className="profile-img-private-chat"
                             alt={otherName}
                           />

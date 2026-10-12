@@ -26,7 +26,7 @@
 }
 
 .hero h1 {
-  font-size: 64px;
+  font-size: 55px;
   line-height: 1.05;
   font-weight: 600;
 }
@@ -37,7 +37,7 @@
 
 .hero p {
   max-width: 520px;
-  font-size: 19px;
+  font-size: 15px;
   color: #eee;
 }
 

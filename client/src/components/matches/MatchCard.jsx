@@ -14,6 +14,7 @@ export default function MatchCard({ match, onClick, onChat }) {
         src={match.profile_photo}
         alt={match.username}
         size={80}
+        gender={match.gender}
         isOnline={match.is_online}
         className="mb-2"
       />

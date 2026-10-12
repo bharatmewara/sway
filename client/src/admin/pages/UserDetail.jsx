@@ -422,13 +422,10 @@ export default function UserDetail() {
               <h6 className="fw-bold mb-3">Live Selfie Verification Attempts ({verificationHistory.length})</h6>
               {verificationHistory.map((vr) => (
                 <div key={vr.id} className="border rounded-3 p-3 mb-3 d-flex gap-3 align-items-start">
-                  {vr.selfie_photo && (
-                    <img
-                      src={resolvePhotoUrl(vr.selfie_photo)}
-                      alt="selfie"
-                      style={{ width: 90, height: 90, objectFit: 'cover', borderRadius: 10 }}
-                    />
-                  )}
+                  <div className="bg-light rounded-3 d-flex flex-column align-items-center justify-content-center p-2 text-center border" style={{ width: 80, height: 80, flexShrink: 0 }}>
+                    <i className="bi bi-shield-check text-success fs-3 mb-1" />
+                    <span style={{ fontSize: 10, fontWeight: 600 }}>Live AI</span>
+                  </div>
                   <div className="flex-grow-1" style={{ fontSize: 13 }}>
                     <div className="d-flex justify-content-between">
                       <strong>Attempt #{vr.id} ({vr.capture_source || 'live_camera'})</strong>

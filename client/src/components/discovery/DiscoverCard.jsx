@@ -1,4 +1,5 @@
 import React from 'react'
+import { resolveAvatarUrl, handleAvatarError } from '../../utils/avatar'
 
 export default function DiscoverCard({ profile }) {
   if (!profile) return null
@@ -6,7 +7,8 @@ export default function DiscoverCard({ profile }) {
   return (
     <div className="w-100 h-100 position-relative rounded-4 overflow-hidden shadow-lg bg-dark text-white">
       <img
-        src={profile.profile_photo || (profile.gender === 'female' ? '/img/girl.png' : '/img/boy.png')}
+        src={resolveAvatarUrl(profile.profile_photo, profile.gender)}
+        onError={(e) => handleAvatarError(e, profile.gender)}
         alt={profile.username}
         className="w-100 h-100 object-fit-cover"
       />

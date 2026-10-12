@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { resolveAvatarUrl, getDefaultAvatar } from '../../utils/avatar'
 
 export default function Avatar({
   src,
@@ -9,8 +10,15 @@ export default function Avatar({
   className = '',
   gender = 'male'
 }) {
-  const fallback = gender === 'female' ? '/img/girl.png' : '/img/boy.png'
-  const [imgSrc, setImgSrc] = useState(src || fallback)
+  const [imgSrc, setImgSrc] = useState(() => resolveAvatarUrl(src, gender))
+
+  useEffect(() => {
+    setImgSrc(resolveAvatarUrl(src, gender))
+  }, [src, gender])
+
+  const handleError = () => {
+    setImgSrc(getDefaultAvatar(gender))
+  }
 
   return (
     <div
@@ -25,7 +33,7 @@ export default function Avatar({
         <img
           src={imgSrc}
           alt={alt}
-          onError={() => setImgSrc(fallback)}
+          onError={handleError}
           className="w-100 h-100 rounded-circle"
           style={{ objectFit: 'cover' }}
         />

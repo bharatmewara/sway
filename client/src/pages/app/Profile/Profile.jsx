@@ -5,6 +5,8 @@ import RightBar from '../../../components/RightBar'
 import { useAuth } from '../../../context/AuthContext'
 import api from '../../../api/axios'
 import toast from 'react-hot-toast'
+import DatePicker from '../../../components/common/DatePicker/DatePicker'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './Profile.css'
 
 const PERSONALITY_TRAITS = ['Active / Lively','Cheerful','Honest / Frank','Modest','Relaxed / Casual','Shy','Ambitious','Cultivated','Imaginative','Moody','Reliable','Sociable','Calm','Fun','Independent','Open-minded','Self-confident','Sophisticated','Chatty','Generous','Mature','Outgoing','Sensitive','Spiritual']
@@ -12,13 +14,6 @@ const SEXUAL_PRACTICES   = ['Anything goes','Conventional sex only','Reading ero
 const HOBBIES            = ['Arts and crafts','Cooking','Hiking','Book clubs','Dining out','Movies','Charity','Fishing','Museums','Coffee','Gardening','Music']
 const EXPECTATIONS       = ['Being listened to','Discretion / Secrecy','Just a flirt','No particular expectations','Platonic','Short-term','Chatting','Experience sharing','Learning / Exchanging','No strings attached','Playful','Something serious','Companionship','Friendship','Long','One-night-stand','Purely sexual','Soulmate','Complicity','Homosexual / Bisexual','Loving','Passion','Romantic','Taking things slow']
 const RELATIONSHIP_TYPES = [{label:'Anything Exciting',icon:'bi-heart'},{label:'Long Term',icon:'bi-stopwatch'},{label:'Open to Anything',icon:'bi-people'},{label:'Short Term',icon:'bi-clock'},{label:'Undecided',icon:'bi-question-circle'},{label:'Virtual',icon:'bi-badge-vr'}]
-
-const getFallback = (gender) => gender === 'female' ? '/img/girl.png' : '/img/profile.jpg'
-
-const getPhoto = (p, gender) => {
-  if (!p) return getFallback(gender)
-  return p.startsWith('http') || p.startsWith('/') || p.startsWith('data:') ? p : `/${p}`
-}
 
 const formatDateInput = (val) => {
   if (!val) return ''
@@ -30,7 +25,7 @@ const formatDateInput = (val) => {
 }
 
 export default function Profile() {
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, refreshUser } = useAuth()
   const navigate = useNavigate()
   const profilePhotoRef = useRef(null)
   const privatePhotoRef = useRef(null)
@@ -110,10 +105,15 @@ export default function Profile() {
     try {
       const res = await api.post('/users/profile/photo', fd)
       const photoUrl = res.data?.photo_url || res.data?.photoUrl || res.data?.photo?.photo_url
-      if (photoUrl) {
+      if (res.data?.user) {
+        updateUser(res.data.user)
+      } else if (photoUrl) {
         updateUser({ profile_photo: photoUrl })
-        toast.success('Profile photo updated')
       }
+      if (refreshUser) {
+        await refreshUser()
+      }
+      toast.success('Profile photo updated')
     } catch { toast.error('Upload failed') }
   }
 
@@ -173,6 +173,20 @@ export default function Profile() {
       toast.error('Date of Birth is required.')
       return
     }
+    const dobMatch = form.date_of_birth.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!dobMatch) {
+      toast.error('Please enter a valid date of birth (YYYY-MM-DD).')
+      return
+    }
+    const [y, m, d] = form.date_of_birth.split('-').map(Number)
+    const today = new Date()
+    let age = today.getFullYear() - y
+    const monthDiff = (today.getMonth() + 1) - m
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < d)) age--
+    if (age < 18) {
+      toast.error('You must be at least 18 years old to join Sway.')
+      return
+    }
     if (!form.city?.trim()) {
       toast.error('City / Location is required.')
       return
@@ -195,6 +209,7 @@ export default function Profile() {
       const updatedProfile = res.data?.profile || {}
       updateUser({
         ...updatedProfile,
+        profile_photo: updatedProfile.profile_photo || user?.profile_photo,
         nickname: form.nickname,
         city: form.city,
         state: form.state,
@@ -203,6 +218,9 @@ export default function Profile() {
         profile_completed: true,
         onboarding_status: 'PROFILE_COMPLETED',
       })
+      if (refreshUser) {
+        await refreshUser()
+      }
 
       const targetGender = (updatedProfile.verified_gender || verifiedGender).toLowerCase()
       if (targetGender === 'female') {
@@ -291,8 +309,8 @@ export default function Profile() {
                 <div className="action-item">
                   <div className="profile_div">
                     <img
-                      src={getPhoto(user?.profile_photo, verifiedGender)}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(verifiedGender); }}
+                      src={resolveAvatarUrl(user?.profile_photo, verifiedGender)}
+                      onError={(e) => handleAvatarError(e, verifiedGender)}
                       className="profile_img"
                       alt="profile"
                     />
@@ -323,8 +341,8 @@ export default function Profile() {
                         ? privatePhotos.map(p => (
                             <div className="private-photo-item" key={p.id}>
                               <img
-                                src={getPhoto(p.photo_url, verifiedGender)}
-                                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(verifiedGender); }}
+                                src={resolveAvatarUrl(p.photo_url, verifiedGender)}
+                                onError={(e) => handleAvatarError(e, verifiedGender)}
                                 alt="private"
                               />
                               <button
@@ -397,12 +415,13 @@ export default function Profile() {
                     />
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label small fw-semibold">Date of Birth <span className="text-danger">*</span></label>
-                    <input
-                      type="date"
-                      className="form-control"
+                    <DatePicker
+                      label="Date of Birth"
+                      name="date_of_birth"
                       value={form.date_of_birth}
-                      onChange={e => setForm(p => ({ ...p, date_of_birth: e.target.value }))}
+                      onChange={val => setForm(p => ({ ...p, date_of_birth: val }))}
+                      minAge={18}
+                      helperText="Must be 18 or older"
                       required
                     />
                   </div>

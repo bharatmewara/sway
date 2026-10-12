@@ -5,10 +5,8 @@ import RightBar from '../../../components/RightBar'
 import { useAuth } from '../../../context/AuthContext'
 import api from '../../../api/axios'
 import toast from 'react-hot-toast'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './Members.css'
-
-const getFallback = (g) => g === 'female' ? '/img/girl.png' : '/img/boy.png'
-const getPhoto = (p, g) => p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : p ? `/${p}` : getFallback(g)
 const timeAgo = (d, online) => {
   if (online) return 'Active now'
   if (!d) return ''
@@ -63,8 +61,8 @@ export default function Members() {
                       <div className="card-body text-center d-flex flex-column align-items-center p-3 p-md-4">
                         <div className="member-avatar-box">
                           <img
-                            src={getPhoto(m.profile_photo, m.gender)}
-                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(m.gender); }}
+                            src={resolveAvatarUrl(m.profile_photo, m.gender)}
+                            onError={(e) => handleAvatarError(e, m.gender)}
                             alt={m.username}
                           />
                         </div>

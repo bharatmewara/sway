@@ -47,6 +47,44 @@ exports.updateProfile = async (req, res) => {
     const finalCity = (payload.city !== undefined ? payload.city : current.city || '').trim();
     const finalPhoto = payload.profile_photo || current.profile_photo;
 
+    if (payload.date_of_birth) {
+      const dobStr = String(payload.date_of_birth).trim();
+      const match = dobStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return fail(res, 'Date of birth must be in YYYY-MM-DD format.', 400);
+      const year = parseInt(match[1], 10);
+      const month = parseInt(match[2], 10);
+      const day = parseInt(match[3], 10);
+      const dateObj = new Date(year, month - 1, day);
+      if (
+        dateObj.getFullYear() !== year ||
+        dateObj.getMonth() !== month - 1 ||
+        dateObj.getDate() !== day
+      ) {
+        return fail(res, 'Invalid date of birth provided.', 400);
+      }
+      const today = new Date();
+      if (dateObj > today) {
+        return fail(res, 'Date of birth cannot be in the future.', 400);
+      }
+      let age = today.getFullYear() - year;
+      const m = today.getMonth() - (month - 1);
+      if (m < 0 || (m === 0 && today.getDate() < day)) age--;
+      if (age < 18) {
+        return fail(res, 'You must be at least 18 years old to join Sway.', 400);
+      }
+      if (age > 120) {
+        return fail(res, 'Please provide a valid date of birth.', 400);
+      }
+      payload.age = age;
+      payload.date_of_birth = dobStr;
+    }
+
+    if (payload.profile_photo && typeof payload.profile_photo === 'string' && payload.profile_photo.trim()) {
+      payload.profile_photo = payload.profile_photo.trim();
+    } else {
+      delete payload.profile_photo;
+    }
+
     if (!current.profile_completed) {
       if (!finalBio) {
         return fail(res, 'Bio / About Me is required to complete your profile.', 400);
@@ -72,6 +110,7 @@ exports.updateProfile = async (req, res) => {
       message: 'Profile completed and saved.',
       profile: {
         ...profile,
+        profile_photo: profile.profile_photo || current.profile_photo,
         gender: effectiveGender,
         selected_gender: effectiveGender,
         verified_gender: effectiveGender,
@@ -89,7 +128,33 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
+const fs = require('fs');
+const path = require('path');
 const { processImage } = require('../utils/image.util');
+
+const profilesDir = path.resolve(__dirname, '../../../uploads/profiles');
+if (!fs.existsSync(profilesDir)) {
+  fs.mkdirSync(profilesDir, { recursive: true });
+}
+
+async function saveAvatarFile(userId, buffer, mimetype) {
+  const ext = mimetype === 'image/png' ? 'png' : mimetype === 'image/webp' ? 'webp' : 'jpg';
+  const filename = `avatar_${userId}_${Date.now()}.${ext}`;
+  const filePath = path.join(profilesDir, filename);
+  await fs.promises.writeFile(filePath, buffer);
+
+  // Clean up any older avatar files for this user
+  try {
+    const existing = await fs.promises.readdir(profilesDir);
+    for (const f of existing) {
+      if (f.startsWith(`avatar_${userId}_`) && f !== filename) {
+        await fs.promises.unlink(path.join(profilesDir, f)).catch(() => {});
+      }
+    }
+  } catch (_) {}
+
+  return `/uploads/profiles/${filename}`;
+}
 
 exports.uploadAvatar = async (req, res) => {
   try {
@@ -100,20 +165,29 @@ exports.uploadAvatar = async (req, res) => {
     if (req.file && req.file.buffer) {
       const processed = await processImage(req.file.buffer, req.file.mimetype, { maxWidth: 1000, maxHeight: 1000, quality: 85 });
       photoBytes = processed.buffer;
-      photoMime = processed.mimetype;
-      photoUrl = processed.dataUri;
+      photoMime = processed.mimetype || 'image/jpeg';
+      photoUrl = await saveAvatarFile(req.user.id, processed.buffer, photoMime);
     } else if (photoUrl && photoUrl.startsWith('data:')) {
       const matches = photoUrl.match(/^data:([^;]+);base64,(.+)$/);
       if (matches) {
         photoMime = matches[1];
         photoBytes = Buffer.from(matches[2], 'base64');
+        photoUrl = await saveAvatarFile(req.user.id, photoBytes, photoMime);
       }
     }
 
     if (!photoUrl) return fail(res, 'No photo provided.', 400);
 
     await profileService.updateAvatar(req.user.id, photoUrl, photoBytes, photoMime);
-    return ok(res, { message: 'Profile photo updated.', photo_url: photoUrl, photoUrl });
+    const updatedUser = await userService.getUser(req.user.id);
+
+    return ok(res, {
+      message: 'Profile photo updated.',
+      photo_url: photoUrl,
+      photoUrl: photoUrl,
+      user: updatedUser,
+      profile: updatedUser,
+    });
   } catch (err) {
     return fail(res, err.message, 500);
   }
@@ -128,7 +202,7 @@ exports.uploadPhoto = async (req, res) => {
     if (req.file && req.file.buffer) {
       const processed = await processImage(req.file.buffer, req.file.mimetype, { maxWidth: 1200, maxHeight: 1200, quality: 85 });
       photoBytes = processed.buffer;
-      photoMime = processed.mimetype;
+      photoMime = processed.mimetype || 'image/jpeg';
       photoUrl = processed.dataUri;
     } else if (photoUrl && photoUrl.startsWith('data:')) {
       const matches = photoUrl.match(/^data:([^;]+);base64,(.+)$/);
@@ -142,8 +216,18 @@ exports.uploadPhoto = async (req, res) => {
 
     const isPrimary = req.body.is_primary === 'true' || req.body.is_primary === true;
     if (isPrimary) {
+      if (photoBytes) {
+        photoUrl = await saveAvatarFile(req.user.id, photoBytes, photoMime);
+      }
       await profileService.updateAvatar(req.user.id, photoUrl, photoBytes, photoMime);
-      return ok(res, { message: 'Profile photo updated.', photo_url: photoUrl, photoUrl });
+      const updatedUser = await userService.getUser(req.user.id);
+      return ok(res, {
+        message: 'Profile photo updated.',
+        photo_url: photoUrl,
+        photoUrl: photoUrl,
+        user: updatedUser,
+        profile: updatedUser,
+      });
     }
     const photo = await profileService.addPhoto(req.user.id, photoUrl, req.body.is_blurred === 'true', photoBytes, photoMime);
     return ok(res, { message: 'Private photo uploaded.', photo, photo_url: photoUrl, photoUrl });
@@ -159,8 +243,30 @@ exports.getAvatarRaw = async (req, res) => {
     if (!data || !data.photo_bytes) {
       return res.status(404).send('Photo not found');
     }
+
+    let viewerId = req.user?.id || null;
+    if (!viewerId) {
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.query.token;
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, env.JWT_SECRET);
+          viewerId = decoded.id;
+        } catch (_) {}
+      }
+    }
+
+    if (viewerId && Number(viewerId) !== Number(userId)) {
+      const blocked = await reportRepo.isBlocked(viewerId, userId);
+      if (blocked) {
+        return res.status(403).json({ success: false, message: 'Access denied: Profile is blocked.' });
+      }
+    }
+
     res.setHeader('Content-Type', data.photo_mime || 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     return res.send(data.photo_bytes);
   } catch (err) {
     return res.status(500).send(err.message);
@@ -199,7 +305,7 @@ exports.getPrivatePhotoRaw = async (req, res) => {
     const photoId = parseInt(req.params.photoId || req.params.id, 10);
     const data = await profileService.getPrivatePhotoBytes(photoId);
     if (!data || !data.photo_bytes) {
-      return res.status(404).send('Photo not found');
+      return res.status(404).json({ success: false, message: 'Photo not found.' });
     }
 
     let viewerId = req.user?.id || null;
@@ -216,6 +322,13 @@ exports.getPrivatePhotoRaw = async (req, res) => {
       }
     }
 
+    if (!viewerId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required to view private photos.',
+      });
+    }
+
     const allowed = await hasPrivatePhotoAccessForOwner(viewerId, viewerRole, data.user_id);
     if (!allowed) {
       return res.status(403).json({
@@ -225,7 +338,9 @@ exports.getPrivatePhotoRaw = async (req, res) => {
     }
 
     res.setHeader('Content-Type', data.photo_mime || 'image/jpeg');
-    res.setHeader('Cache-Control', 'private, max-age=3600');
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     return res.send(data.photo_bytes);
   } catch (err) {
     return res.status(500).send(err.message);

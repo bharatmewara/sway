@@ -3,10 +3,8 @@ import { Link } from 'react-router-dom'
 import DashboardLayout from '../../../components/DashboardLayout'
 import api from '../../../api/axios'
 import useSocket from '../../../hooks/useSocket'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './Visitors.css'
-
-const getFallback = () => '/img/profile.jpg'
-const getPhoto = (p) => p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : p ? `/${p}` : null
 const timeAgo = (d) => {
   if (!d) return ''
   const s = Math.floor((Date.now() - new Date(d)) / 1000)
@@ -71,7 +69,6 @@ export default function Visitors() {
           <div className="row g-2 g-md-3">
             {visitors.map(v => {
               const { date, time } = fmtDate(v.visited_at || v.last_visited_at)
-              const photo = getPhoto(v.profile_photo)
               return (
                 <div key={v.visitor_id} className="col-6 col-md-4 col-xl-3">
                   <div className="card border-0 shadow-sm conversation-card mb-2 mb-md-3 position-relative">
@@ -79,15 +76,12 @@ export default function Visitors() {
                       <i className="bi bi-trash-fill" />
                     </button>
                     <Link to={`/view-profile/${v.visitor_id}`} className="card-body p-3 p-md-4 text-center text-decoration-none text-dark d-block">
-                      {photo
-                        ? <img
-                            src={photo}
-                            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(); }}
-                            className="profile-img-private-chat"
-                            alt={v.username}
-                          />
-                        : <div className="profile-img-private-chat bg-secondary d-flex align-items-center justify-content-center rounded-circle mx-auto"><i className="bi bi-person-fill text-white fs-3" /></div>
-                      }
+                      <img
+                        src={resolveAvatarUrl(v.profile_photo, v.gender)}
+                        onError={(e) => handleAvatarError(e, v.gender)}
+                        className="profile-img-private-chat"
+                        alt={v.username}
+                      />
                       <h5 className="mt-2 mt-md-3 mb-1 fw-bold text-truncate">
                         {v.username}
                         {v.is_online && <span className="status-dot ms-1 ms-md-2" />}

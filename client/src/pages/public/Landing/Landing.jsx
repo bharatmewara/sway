@@ -106,9 +106,13 @@ export default function Landing() {
       <section className="hero">
         <div className="container">
           <div className="col-lg-7 col-xl-6">
-            <h1>Where Privacy <br /><span>Meets Chemistry</span></h1>
+            <h1>Your Private Life. <br /><span>Your Connection. Your Choice.</span></h1>
             <p className="my-4">
-              A private, AI-verified platform for discerning adults seeking authentic, discreet, and meaningful connections. Real people, verified identities, and complete personal discretion.
+              Discreet dating for married and attached adults.
+
+              Meet people who understand that not every connection needs to be public.
+
+Sway gives you a private space to discover meaningful connections, have genuine conversations and decide exactly what you want to share — and when.
             </p>
             <div className="d-flex flex-wrap gap-3 gap-sm-4 mb-4 text-white-50">
               <span className="text-white"><i className="bi bi-shield-check text-warning me-1"></i> Live AI Verified</span>
@@ -117,11 +121,14 @@ export default function Landing() {
             </div>
             <div className="d-flex flex-wrap gap-3">
               <Link to="/register" className="btn btn-wine px-4 py-2 fw-semibold">
-                Start Verification <i className="bi bi-arrow-right ms-1"></i>
+                Join Sway <i className="bi bi-arrow-right ms-1"></i>
               </Link>
               <Link to="/about" className="btn btn-outline-light px-4 py-2 fw-semibold">
-                Learn More About Us
+                Explore How It Works
               </Link>
+              <p className="my-1">
+                Your identity stays yours. Your photos stay under your control. Your conversations stay private.
+            </p>
             </div>
           </div>
         </div>
@@ -161,9 +168,9 @@ export default function Landing() {
           <div className="row align-items-center g-5">
             <div className="col-lg-4">
               <div className="title-small">More Than A Platform</div>
-              <h2 className="section-title">Rediscover <span>Connection</span></h2>
+              <h2 className="section-title">Dating Without Putting <span> Your Private Life on Display</span></h2>
               <p className="text-secondary leading-relaxed">
-                SWAY provides a secure and confidential environment where verified members can build genuine connections with people who understand them. No public feeds, no social media exposure, and zero fake accounts.
+                Whether you're married, separated, in a complicated relationship, or simply looking for a connection outside the conventional dating experience, you deserve a space where you can explore connections without immediately exposing your identity.
               </p>
               <Link to="/about" className="btn btn-wine mt-3 px-4 py-2 fw-semibold">
                 Learn More About Us <i className="bi bi-arrow-right ms-1"></i>
@@ -176,28 +183,28 @@ export default function Landing() {
                   <div className="feature-card h-100">
                     <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=600" alt="Genuine Connections" />
                     <div className="icon"><i className="bi bi-heart"></i></div>
-                    <div className="p-3"><h6>Genuine Connections</h6><p className="small text-muted mb-0">Meet verified, like-minded people privately.</p></div>
+                    <div className="p-3"><h6>Controlled Photos</h6><p className="small text-muted mb-0">Keep control over who sees your personal photos and when you choose to reveal more.</p></div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-3">
                   <div className="feature-card h-100">
                     <img src="https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=600" alt="Private Conversations" />
                     <div className="icon"><i className="bi bi-chat-heart"></i></div>
-                    <div className="p-3"><h6>Private Chats</h6><p className="small text-muted mb-0">Secure messaging with verified members only.</p></div>
+                    <div className="p-3"><h6>Private Profile</h6><p className="small text-muted mb-0">Choose how much of yourself you reveal. Your profile doesn't have to tell your entire story.</p></div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-3">
                   <div className="feature-card h-100">
                     <img src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=600" alt="Discretion" />
                     <div className="icon"><i className="bi bi-lock"></i></div>
-                    <div className="p-3"><h6>Absolute Discretion</h6><p className="small text-muted mb-0">Your identity and contacts stay fully shielded.</p></div>
+                    <div className="p-3"><h6>Discreet Discovery</h6><p className="small text-muted mb-0">Connect through compatible profiles without unnecessarily exposing your personal information.</p></div>
                   </div>
                 </div>
                 <div className="col-sm-6 col-md-3">
                   <div className="feature-card h-100">
                     <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=600" alt="Compatibility" />
                     <div className="icon"><i className="bi bi-compass"></i></div>
-                    <div className="p-3"><h6>Nearby Discovery</h6><p className="small text-muted mb-0">Smart proximity filters for local compatibility.</p></div>
+                    <div className="p-3"><h6>Private Conversations</h6><p className="small text-muted mb-0">Get to know someone inside Sway before deciding whether you're comfortable taking the conversation elsewhere.</p></div>
                   </div>
                 </div>
               </div>

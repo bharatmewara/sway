@@ -7,7 +7,7 @@ import { storage } from '../utils/storage'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const [user,    setUser]    = useState(null)
+  const [user,    setUser]    = useState(() => storage.getUser())
   const [token,   setToken]   = useState(() => storage.getToken())
   const [loading, setLoading] = useState(true)
   const [counts,  setCounts]  = useState({ messages: 0, requests: 0, notifications: 0 })
@@ -39,7 +39,9 @@ export function AuthProvider({ children }) {
   const verifyToken = async (t) => {
     try {
       const res = await authService.me()
-      setUser(res.data.user || res.data)
+      const freshUser = res.data.user || res.data
+      setUser(freshUser)
+      storage.setUser(freshUser)
       setToken(t)
     } catch {
       storage.clear()
@@ -57,6 +59,22 @@ export function AuthProvider({ children }) {
       const res = await userService.getCounts()
       if (res.data?.success) setCounts(res.data.counts)
     } catch {}
+  }, [])
+
+  // ── Refresh fresh user profile from backend ──────────────────────────────
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await authService.me()
+      const freshUser = res.data?.user || res.data
+      if (freshUser) {
+        setUser(freshUser)
+        storage.setUser(freshUser)
+      }
+      return freshUser
+    } catch (err) {
+      console.error('[AuthContext] Failed to refresh user profile:', err)
+      return null
+    }
   }, [])
 
   // ── Poll counts every 15s when logged in ──────────────────────────────────
@@ -116,16 +134,18 @@ export function AuthProvider({ children }) {
     setCounts({ messages: 0, requests: 0, notifications: 0 })
   }
 
-  const updateUser = (data) => {
-    const updated = { ...user, ...data }
-    setUser(updated)
-    storage.setUser(updated)
-  }
+  const updateUser = useCallback((data) => {
+    setUser((prev) => {
+      const updated = { ...(prev || {}), ...data }
+      storage.setUser(updated)
+      return updated
+    })
+  }, [])
 
   return (
     <AuthContext.Provider value={{
       user, token, loading, counts,
-      login, logout, updateUser, fetchCounts,
+      login, logout, updateUser, refreshUser, fetchCounts,
       activeChatUserId, setActiveChatUserId,
       insufficientConnectsModal, showInsufficientConnects, hideInsufficientConnects,
     }}>

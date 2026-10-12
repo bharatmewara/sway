@@ -14,7 +14,27 @@ const update = [
   body('preferred_age_max').optional({ nullable: true }).isInt({ max: 100 }).withMessage('Max age must be ≤100.'),
   body('date_of_birth').optional({ nullable: true }).custom(v => {
     if (!v) return true;
-    if (isNaN(Date.parse(v))) throw new Error('Invalid date of birth.');
+    const dob = String(v).trim();
+    const match = dob.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) throw new Error('Date of birth must be in YYYY-MM-DD format.');
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10);
+    const day = parseInt(match[3], 10);
+    const dateObj = new Date(year, month - 1, day);
+    if (
+      dateObj.getFullYear() !== year ||
+      dateObj.getMonth() !== month - 1 ||
+      dateObj.getDate() !== day
+    ) {
+      throw new Error('Invalid calendar date provided for date of birth.');
+    }
+    const today = new Date();
+    if (dateObj > today) throw new Error('Date of birth cannot be in the future.');
+    let age = today.getFullYear() - year;
+    const m = today.getMonth() - (month - 1);
+    if (m < 0 || (m === 0 && today.getDate() < day)) age--;
+    if (age < 18) throw new Error('You must be at least 18 years old to join Sway.');
+    if (age > 120) throw new Error('Please enter a valid date of birth.');
     return true;
   }),
   body('marital_status').optional({ nullable: true }).isString(),

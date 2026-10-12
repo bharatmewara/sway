@@ -6,15 +6,8 @@ import { useAuth } from '../../../context/AuthContext';
 import useSocket from '../../../hooks/useSocket';
 import api from '../../../api/axios';
 import toast from 'react-hot-toast';
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 import './Notifications.css';
-
-const getFallback = (g) => (g === 'female' ? '/img/girl.png' : '/img/boy.png');
-const getPhoto = (p, g) =>
-  p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:'))
-    ? p
-    : p
-    ? `/${p}`
-    : getFallback(g);
 
 const timeAgo = (iso) => {
   if (!iso) return '';
@@ -375,11 +368,8 @@ export default function Notifications() {
                                   }}
                                 >
                                   <img
-                                    src={getPhoto(n.sender_photo, n.sender_gender)}
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = getFallback(n.sender_gender);
-                                    }}
+                                    src={resolveAvatarUrl(n.sender_photo, n.sender_gender)}
+                                    onError={(e) => handleAvatarError(e, n.sender_gender)}
                                     alt={senderName}
                                     className="notif-avatar-img"
                                   />

@@ -3,14 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import useSocket from '../hooks/useSocket'
 import api from '../api/axios'
+import { resolveAvatarUrl, handleAvatarError } from '../utils/avatar'
 import './RightBar.css'
-
-const getFallback = (gender) => gender === 'female' ? '/img/girl.png' : '/img/boy.png'
-
-const getPhoto = (photo, gender) => {
-  if (!photo) return getFallback(gender)
-  return photo.startsWith('http') || photo.startsWith('/') || photo.startsWith('data:') ? photo : `/${photo}`
-}
 
 const timeAgo = (dateStr) => {
   if (!dateStr) return 'Recently'
@@ -149,8 +143,8 @@ export default function RightBar() {
                 >
                   <div className="avatar">
                     <img
-                      src={getPhoto(photo, gender)}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(gender) }}
+                      src={resolveAvatarUrl(photo, gender)}
+                      onError={(e) => handleAvatarError(e, gender)}
                       alt={name}
                     />
                   </div>
@@ -203,8 +197,8 @@ export default function RightBar() {
                 >
                   <div className="avatar">
                     <img
-                      src={getPhoto(req.profile_photo, req.gender)}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(req.gender) }}
+                      src={resolveAvatarUrl(req.profile_photo, req.gender)}
+                      onError={(e) => handleAvatarError(e, req.gender)}
                       alt={name}
                     />
                   </div>
@@ -251,8 +245,8 @@ export default function RightBar() {
                   title={v.username || 'Visitor'}
                 >
                   <img
-                    src={getPhoto(v.profile_photo, v.gender)}
-                    onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(v.gender) }}
+                    src={resolveAvatarUrl(v.profile_photo, v.gender)}
+                    onError={(e) => handleAvatarError(e, v.gender)}
                     alt={v.username || ''}
                   />
                 </Link>

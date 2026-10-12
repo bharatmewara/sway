@@ -8,10 +8,8 @@ import toast from 'react-hot-toast'
 import useSocket from '../../../hooks/useSocket'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar'
 import './Search.css'
-
-const getFallback = (g) => g === 'female' ? '/img/girl.png' : '/img/boy.png'
-const getPhoto = (p, g) => p && (p.startsWith('http') || p.startsWith('/') || p.startsWith('data:')) ? p : p ? `/${p}` : getFallback(g)
 
 const formatDistance = (distKm) => {
   if (distKm === null || distKm === undefined || isNaN(Number(distKm))) return null
@@ -232,8 +230,8 @@ export default function Search() {
                   <div className="col-6 col-sm-6 col-md-4" key={m.id}>
                     <Link to={`/view-profile/${m.id}`} className="search-results-card shadow-sm position-relative">
                       <img
-                        src={getPhoto(m.profile_photo, m.gender)}
-                        onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(m.gender); }}
+                        src={resolveAvatarUrl(m.profile_photo, m.gender)}
+                        onError={(e) => handleAvatarError(e, m.gender)}
                         alt={m.username}
                       />
                       {distLabel && (

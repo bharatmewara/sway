@@ -9,15 +9,8 @@ import RightBar from '../../../components/RightBar';
 import api from '../../../api/axios';
 import { useAuth } from '../../../context/AuthContext';
 import useSocket from '../../../hooks/useSocket';
+import { resolveAvatarUrl, handleAvatarError } from '../../../utils/avatar';
 import './Dashboard.css';
-
-const getFallback = (gender) => gender === 'female' ? '/img/girl.png' : '/img/profile-man.png';
-
-const getPhoto = (member) => {
-  if (!member?.profile_photo) return getFallback(member?.gender);
-  const p = member.profile_photo;
-  return p.startsWith('http') || p.startsWith('/') || p.startsWith('data:') ? p : `/${p}`;
-};
 
 const formatDistance = (distKm) => {
   if (distKm === null || distKm === undefined || isNaN(Number(distKm))) return null;
@@ -243,8 +236,8 @@ export default function Dashboard() {
     return (
       <Link to={`/view-profile/${member.id}`} className="member-card position-relative" key={member.id}>
         <img
-          src={getPhoto(member)}
-          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(member?.gender); }}
+          src={resolveAvatarUrl(member.profile_photo, member.gender)}
+          onError={(e) => handleAvatarError(e, member.gender)}
           alt={member.username}
         />
         {showDistance && distLabel && (
@@ -282,8 +275,8 @@ export default function Dashboard() {
                 <div className="d-flex gap-3 align-items-center mb-3">
                   <div className="profile-img2" style={{ overflow: 'visible' }}>
                     <img
-                      src={getPhoto(user)}
-                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = getFallback(user?.gender); }}
+                      src={resolveAvatarUrl(user?.profile_photo, user?.gender)}
+                      onError={(e) => handleAvatarError(e, user?.gender)}
                       alt={user?.username || 'avatar'}
                       style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
                     />

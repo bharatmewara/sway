@@ -34,10 +34,11 @@ export default function ChatWindow({
       <div className="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
         <div className="d-flex align-items-center gap-3">
           <Avatar
-            src={activeUser.profile_photo}
-            alt={activeUser.username}
+            src={activeUser.profile_photo || activeUser.other_photo}
+            alt={activeUser.username || activeUser.other_username}
             size={42}
-            isOnline={activeUser.is_online}
+            gender={activeUser.gender || activeUser.other_gender}
+            isOnline={activeUser.is_online || activeUser.other_is_online}
           />
           <div>
             <h6 className="fw-bold mb-0">{activeUser.username}</h6>

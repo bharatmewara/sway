@@ -13,6 +13,7 @@ export default function MatchProfile({ match, isOpen, onClose, onStartChat, onUn
           src={match.profile_photo}
           alt={match.username}
           size={110}
+          gender={match.gender}
           isOnline={match.is_online}
           className="mb-3 border border-4 border-light shadow-sm"
         />

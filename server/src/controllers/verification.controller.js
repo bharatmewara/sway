@@ -263,6 +263,11 @@ exports.submitSelfie = async (req, res) => {
       failureReason = "We couldn't verify your identity based on the information provided. Please complete the verification again using a live selfie.";
     }
 
+    // Enforce strict no-cache headers on verification responses to prevent browser and CDN caching
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     await client.query('BEGIN');
 
     // 3. Handle Failed Verification (Face Detection Failure OR Gender Mismatch)
@@ -273,13 +278,10 @@ exports.submitSelfie = async (req, res) => {
             selected_gender, ai_gender_detected, gender_match_status, capture_source,
             ai_confidence_score, face_count, failure_reason,
             status, review_notes, submitted_at, reviewed_at)
-         VALUES ($1, 'facial', $2, $3, $4, $5, $6, $7, 'live_camera', $8, $9, $10, 'rejected', $10, NOW(), NOW())
+         VALUES ($1, 'facial', NULL, NULL, NULL, $2, $3, $4, 'live_camera', $5, $6, $7, 'rejected', $7, NOW(), NOW())
          RETURNING id`,
         [
           userId,
-          processed.dataUri,
-          processed.buffer,
-          processed.mimetype,
           selectedGender,
           aiDetectedGender || null,
           genderMatchStatus,
@@ -302,6 +304,13 @@ exports.submitSelfie = async (req, res) => {
 
       await client.query('COMMIT');
 
+      // Purge image buffer references immediately
+      rawBuffer = null;
+      if (processed) {
+        processed.buffer = null;
+        processed.dataUri = null;
+      }
+
       return res.status(200).json({
         success: false,
         verified: false,
@@ -323,19 +332,17 @@ exports.submitSelfie = async (req, res) => {
     const connectRequiredForChat = verifiedGender === 'male'; // false for female, true for male
     const normalizedConfidence = parseFloat((Math.min(confidence || 92, 99.9) / 100).toFixed(4));
 
+    // Audit record: store metadata only. Verification selfie is strictly NOT retained.
     const reqInsert = await client.query(
       `INSERT INTO verification_requests
          (user_id, verification_type, selfie_photo, selfie_bytes, selfie_mime,
           selected_gender, ai_gender_detected, gender_match_status, capture_source,
           ai_confidence_score, ai_liveness_score, face_count,
           status, review_notes, submitted_at, reviewed_at)
-       VALUES ($1, 'facial', $2, $3, $4, $5, $6, 'MATCH', 'live_camera', $7, 0.9800, 1, 'approved', 'Live AI Selfie Verification & Gender Match Approved', NOW(), NOW())
+       VALUES ($1, 'facial', NULL, NULL, NULL, $2, $3, 'MATCH', 'live_camera', $4, 0.9800, 1, 'approved', 'Live AI Selfie Verification & Gender Match Approved', NOW(), NOW())
        RETURNING id`,
       [
         userId,
-        processed.dataUri,
-        processed.buffer,
-        processed.mimetype,
         selectedGender,
         aiDetectedGender,
         normalizedConfidence,
@@ -343,6 +350,7 @@ exports.submitSelfie = async (req, res) => {
     );
 
     // Update user record with verified state, matched gender, and connect rules.
+    // CRITICAL: Under no circumstances is the verification selfie assigned to profile_photo or photo_bytes.
     const userUpdate = await client.query(
       `UPDATE users
        SET verification_status = 'verified',
@@ -355,20 +363,14 @@ exports.submitSelfie = async (req, res) => {
            profile_status = CASE WHEN profile_completed = true THEN 'COMPLETED' ELSE 'INCOMPLETE' END,
            connect_required_for_chat = $3,
            onboarding_status = CASE WHEN profile_completed = true THEN 'PROFILE_COMPLETED' ELSE 'PROFILE_INCOMPLETE' END,
-           profile_photo = COALESCE(NULLIF(profile_photo, ''), $4),
-           photo_bytes = COALESCE(photo_bytes, $5),
-           photo_mime = COALESCE(photo_mime, $6),
            verified_at = NOW(),
            updated_at = NOW()
-       WHERE id = $7
+       WHERE id = $4
        RETURNING *`,
       [
         verifiedGender,
         aiDetectedGender,
         connectRequiredForChat,
-        processed.dataUri,
-        processed.buffer,
-        processed.mimetype,
         userId,
       ]
     );
@@ -385,6 +387,13 @@ exports.submitSelfie = async (req, res) => {
     });
 
     await client.query('COMMIT');
+
+    // Purge image buffer references immediately
+    rawBuffer = null;
+    if (processed) {
+      processed.buffer = null;
+      processed.dataUri = null;
+    }
 
     return res.status(200).json({
       success: true,

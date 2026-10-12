@@ -212,6 +212,14 @@ export default function Verify() {
       const data = res.data;
 
       if (data.verified && data.success && data.gender_match_status === 'MATCH') {
+        // Immediately clear selfie frame state to ensure zero retention in client memory
+        setSelfie(null);
+
+        const cleanUser = { ...data.user };
+        if (cleanUser.profile_photo && cleanUser.profile_photo.startsWith('data:')) {
+          cleanUser.profile_photo = null;
+        }
+
         setVerificationState('VERIFIED');
         setVerifiedResult({
           selectedGender: data.selected_gender || selectedGender,
@@ -219,21 +227,28 @@ export default function Verify() {
           confidence: data.confidence,
           connectRequired: data.connect_required_for_chat,
           message: data.message,
-          user: data.user,
+          user: cleanUser,
           token: data.token,
         });
 
         // Update AuthContext with verified user and token
-        if (data.user && data.token) {
-          login(data.user, data.token);
+        if (cleanUser && data.token) {
+          login(cleanUser, data.token);
         }
         toast.success('Verification Successful! Gender matched.');
+
+        // Purge any residual storage items
+        try {
+          sessionStorage.removeItem('sway_verification_image');
+          localStorage.removeItem('sway_verification_image');
+        } catch (_) {}
 
         // Redirect to Profile Page after brief confirmation
         setTimeout(() => {
           navigate('/profile', { replace: true });
         }, 1600);
       } else {
+        setSelfie(null);
         const isMismatch = data.code === 'GENDER_MISMATCH' || data.gender_match_status === 'MISMATCH';
         const reason = isMismatch
           ? "We couldn't verify your identity based on the information provided. Please complete the verification again using a live selfie."
@@ -243,6 +258,7 @@ export default function Verify() {
         setFailModal({ open: true, reason, isGenderMismatch: isMismatch });
       }
     } catch (err) {
+      setSelfie(null);
       const isMismatch = err.response?.data?.code === 'GENDER_MISMATCH' || err.response?.data?.gender_match_status === 'MISMATCH';
       const reason =
         err.response?.data?.reason ||

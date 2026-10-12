@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Input from '../common/Input'
 import Button from '../common/Button'
+import DatePicker from '../common/DatePicker/DatePicker'
 
 export default function RegisterForm({ onSubmit, loading = false, error = null }) {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
   })
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [consentError, setConsentError] = useState('')
+  const [dobError, setDobError] = useState('')
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -30,6 +32,29 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
     if (!['female', 'male'].includes(formData.gender)) {
       return
     }
+    if (!formData.dob) {
+      setDobError('Date of birth is required.')
+      return
+    }
+    // Check age 18+
+    const match = formData.dob.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    if (!match) {
+      setDobError('Please select a valid date of birth (YYYY-MM-DD).')
+      return
+    }
+    const year = parseInt(match[1], 10)
+    const month = parseInt(match[2], 10)
+    const day = parseInt(match[3], 10)
+    const today = new Date()
+    let age = today.getFullYear() - year
+    const m = (today.getMonth() + 1) - month
+    if (m < 0 || (m === 0 && today.getDate() < day)) age--
+    if (age < 18) {
+      setDobError('You must be at least 18 years old to join Sway.')
+      return
+    }
+    setDobError('')
+
     if (!termsAccepted) {
       setConsentError('Please accept the Terms & Conditions and Privacy Policy to continue.')
       return
@@ -165,12 +190,17 @@ export default function RegisterForm({ onSubmit, loading = false, error = null }
           />
         </div>
         <div className="col-md-6">
-          <Input
+          <DatePicker
             label="Date of Birth"
             name="dob"
-            type="date"
             value={formData.dob}
-            onChange={handleChange}
+            onChange={(val) => {
+              setFormData((prev) => ({ ...prev, dob: val }))
+              setDobError('')
+            }}
+            error={dobError}
+            minAge={18}
+            helperText="Must be 18 or older to join Sway"
             required
           />
         </div>

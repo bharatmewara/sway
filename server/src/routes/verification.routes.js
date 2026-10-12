@@ -8,6 +8,15 @@ const { uploadVerification, uploadProfile } = require('../middleware/upload.midd
 const adminCtrl = require('../controllers/admin.controller');
 const { requireAdmin } = require('../middleware/admin.middleware');
 
+const noCache = (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+};
+
+router.use(noCache);
+
 router.post('/selfie', verifyToken, uploadProfile, ctrl.submitSelfie);
 router.post('/submit', verifyToken, uploadVerification, ctrl.submitSelfie);
 router.get('/status', verifyToken, ctrl.getStatus);
